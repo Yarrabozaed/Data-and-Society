@@ -55,9 +55,9 @@ Lab <- c("Agriculture", "Mining", "Utilities", "Construction", "Manufacturing", 
 LabChange <- Tract[,-1:-7]
 LabChange <- LabChange[,-22:-23]
 LabChange <- setNames(LabChange, Lab)
-NoChangeFirst <- Tract[,-7:-30]
+NoChangeFirst <- Tract[,-8:-30]
 NoChangeLast <- Tract[, -1:-28]
-Tract <- cbind(NoChangeFirst, LabChange, NoChangeLast)
+Tract1 <- cbind(NoChangeFirst, LabChange, NoChangeLast)
 
 Lab <- c("GeographicArea", "Population_Estimates_Base", "PopEstimate2020", "PopEstimate2021", "PopEstimate2022", "Ranking_Base", "Ranking2020", "Ranking2021", "Ranking2022", "Change_21_22_Number", "Change_21_22_Percent", "Change_20_22_Number", "Change_20_22_Percent", "Ranking_21_22_Number", "Ranking_21_22_Percentage", "Ranking_20_22_Number", "Ranking_20_22_Percentage")
 
