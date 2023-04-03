@@ -14,6 +14,12 @@ library(plotly)
 library(readr)
 library(albersusa)
 
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())}
+
 us_states <- usa_sf("laea")
 
 Labels <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/lehd_types_s3.csv")
@@ -82,5 +88,7 @@ USStatesTract$Proportion <- USStatesTract$TJLI / USStatesTract$PopEstimate2020
 
 
 ggplot(USStatesTract) +
-geom_sf(aes(fill = Proportion))
+  geom_sf(aes(fill = Proportion)) +
+  scale_fill_continuous(low="yellow", high="red") +
+  my_map_theme()
 ```
