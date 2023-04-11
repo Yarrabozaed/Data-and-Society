@@ -15,7 +15,8 @@ County <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/sum_job_
 Tract <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/job_loss_by_tract.csv")
 CBSA <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/sum_job_loss_cbsa.csv")
 Census_Data <- read_csv("http://www.bls.gov/cew/data/api/2022/3/industry/10.csv", col_names = FALSE, skip = 10, n_max = 51)
-states_fips <- read_csv("Desktop/Data-and-Society/states_fips.csv")
+states_fips <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/states_fips.csv?token=GHSAT0AAAAAAB6HU4X3XK4C7USKTKX6WGEGZBTJZGQ")
+View(states_fips)
 
 ## Data
 Lab <- c("TotalJobLossIndex", "Agriculture", "Mining", "Utilities", "Construction", "Manufacturing", "Wholesale_Trade", "Retail_Trade", "Transportation_Warehousing", "Information", "Finance_Insurance", "RealEstate", "STEM", "CorpManagement", "WasteManagement", "Education", "Health_SocialAssistance", "Arts", "Accommodations_FoodService", "OtherServices", "PublicAdmin")
@@ -51,33 +52,41 @@ Census_Data$GeographicArea <- str_replace(Census_Data$GeographicArea, ".", "" )
 
 
 TGraph <- Tract %>%
-  select(state_name, TotalJobLossIndex)%>%
+  select(state_name, TotalJobLossIndex, total_li_workers_employed)%>%
   group_by(state_name) %>%
-  summarize(TJLI = sum(TotalJobLossIndex))
+  summarize(TJLI = sum(TotalJobLossIndex)/sum(total_li_workers_employed))
 
-QoL_Abrev <- left_join(QoL, states_fips, c("state"="name"))
+prop <- left_join(states_fips, TGraph, c("name"="state_name"))
+
+QoL_Abrev <- left_join(QoL, prop, c("state"="name"))
 state_JLI <- TGraph[-9,]
 
 QoL_JLI <- left_join(state_JLI, QoL_Abrev, c("state_name"="state"))
 
 QoL_JLI$JLP <- QoL_JLI$TJLI / QoL_JLI$pop2020
 
-"""
-TGraph$state_name <- state.abb[match(TGraph$state_name, state.name)]
-TGraph$state_name <- replace_na(TGraph$state_name, "DC")
+QoL_JLI$QoL_21 <- rowSums(QoL_JLI[, c("healthCareRank_21","educationRank_21","economyRank_21","infrastructureRank_21","oppurtunityRank_21","fiscalStabilityRank_21","crimeAndCorrectionsRank_21","naturalEnvironmentRank_21")])
 
-us_states_Tract <- left_join(us_states, TGraph, c("iso_3166_2"="state_name"))
+QoL_JLI$QoL_18 <- rowSums(QoL_JLI[, c("healthCareRank_18","educationRank_18","economyRank_18","infrastructureRank_18","oppurtunityRank_18","fiscalStabilityRank_18","crimeAndCorrectionsRank_18","naturalEnvironmentRank_18")])
 
-Census_Data$GeographicArea <- state.abb[match(Census_Data$GeographicArea, state.name)]
-Census_Data$GeographicArea <- replace_na(Census_Data$GeographicArea, "DC")
+QoL_JLI$QoL_21 <- 377 - QoL_JLI$QoL_21
 
-USStatesTract <- left_join(us_states_Tract, Census_Data, c("iso_3166_2" = "GeographicArea"))
-View(Census_Data)
-USStatesTract$Proportion <- USStatesTract$TJLI / USStatesTract$PopEstimate2020
+QoL_JLI$QoL_18 <- 372 - QoL_JLI$QoL_18
+
+QoL_Abrev$QoL_change <- QoL_Abrev$lifeQualityRank_18 - QoL_Abrev$lifeQualityRank_21
+
+QoL_JLI$FS_change <- QoL_JLI$fiscalStabilityRank_18 - QoL_JLI$fiscalStabilityRank_21
+
+ggplot(QoL_JLI, mapping = aes(JLP, QoL_21)) +
+  geom_point()
 
 
-ggplot(USStatesTract) +
-  geom_sf(aes(fill = Proportion)) +
-  scale_fill_continuous(low="yellow", high="red") +
-  my_map_theme()
-"""
+
+qplot(x = TJLI, y=QoL_change , data = QoL_Abrev, geom=c("jitter","smooth"))
+
+cor.test(QoL_Abrev$TJLI, QoL_Abrev$QoL_change)
+
+
+
+
+
