@@ -1,0 +1,68 @@
+---
+title: "Vaccinations Rates"
+author: "Author Name"
+date: "04.23.23"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(albersusa)
+library(plotly)
+library(ggplot2)
+covid19_vaccinations_state_prop <- read_csv("covid19_vaccinations_state_prop.csv", skip = 4)
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())
+}
+```
+
+### Vaccination Rates 
+
+Proportion relative tot state population
+
+```{r}
+# first, filter data
+covid19_vaccinations_state_prop_new <- covid19_vaccinations_state_prop %>%
+  rename("State_Territory" = `Jurisdiction (State/Territory) or Federal Entity`, 
+         "Total_doses_distrubuted" = `Total doses distributed`,
+         "Doses_distributed_per_100K_pop" = `Doses distributed per 100K pop`,
+         "Doses_admin_by_jurisdiction_per_100K_pop" = `Doses administered by jurisdiction per 100K pop`) %>%
+  mutate(State_Territory = str_replace(State_Territory, "New York State", "New York")) %>% 
+  mutate(Doses_admin_by_jurisdiction_per_100K_pop = as.integer(Doses_admin_by_jurisdiction_per_100K_pop))
+
+# join with geographic data for map
+us_states <- usa_sf("laea")
+
+#create cutpoints & labels
+my_cutpoints <- c(300000, 200000, 150000, 100000)
+my_labels <- c("220,001 +", "210,001 - 220,000", "200,001 - 210,000", 
+               "190,001 - 200,000", "1 - 190,000")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, covid19_vaccinations_state_prop_new, by = c("name" = "State_Territory")) %>% 
+  mutate(margin = cut(Doses_admin_by_jurisdiction_per_100K_pop, breaks = my_cutpoints, labels = my_labels))
+
+#add colors
+my_colors <- c("#0c2c84","#225ea8","#1d91c0","#41b6c4", 
+                        "#7fcdbb","#c7e9b4", "white")
+
+#initial map
+ggplot(mapdata1) +
+  geom_sf(aes(fill= margin), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("", values = my_colors) +
+  labs(title="Total Doses Administered Reported\n to the CDC by State/Territory and\n for Select Federal Entities per\n 100K of the Total Population") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+```
+### Exercise 2
+Insert any text here.
+
+```{r}
+
+```
+...
+
