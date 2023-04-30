@@ -1,5 +1,8 @@
 library(dplyr)
 
+#This data-set is MASSIVE, download at your own discretion 
+
+Bans <- read_csv("https://data.cdc.gov/api/views/3qs9-qnbs/rows.csv?accessType=DOWNLOAD")
 Bans$Date <- as.Date(Bans$Date)
 
 Bans_filtered <- Bans %>% filter(General_or_Under_6ft_Bans_Gatherings_Over != -1)
@@ -27,7 +30,7 @@ analysis_sd$max_ban_duration <- as.integer(gsub(" days", "", analysis_sd$max_ban
 
 cor.test(analysis_sd$ProportionOfJobLossIndexToLowIncomeJobs, analysis_sd$max_ban_duration)
 
-#TESTS
+#TESTS- DONT RUN THIS
 JL$state_name[!(JL$state_name %in% max_ban_duration_by_state$State_Tribe_Territory)]
 x <- subset(Bans, State_Tribe_Territory == "Arizona")
 
