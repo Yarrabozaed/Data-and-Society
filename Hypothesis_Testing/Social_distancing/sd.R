@@ -1,4 +1,8 @@
 library(dplyr)
+library(ggplot2)
+library(scales)
+library(readr)
+library(ggplot2)
 
 #This data-set is MASSIVE, download at your own discretion 
 
@@ -27,8 +31,27 @@ JL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/m
 analysis_sd <- merge(JL, max_ban_duration_by_state, by.x = "state_name", by.y = "State_Tribe_Territory") 
 analysis_sd$max_ban_duration <- as.integer(gsub(" days", "", analysis_sd$max_ban_duration))
 
+View(analysis_sd)
 
 cor.test(analysis_sd$ProportionOfJobLossIndexToLowIncomeJobs, analysis_sd$max_ban_duration)
+
+highlight_row <- c("Hawaii", "New York", "District of Columbia")
+
+highlight_row1 <- c("Idaho", "Utah")
+
+
+
+library(lubridate)
+library(scales)
+ggplot(analysis_sd, aes(x = max_ban_duration, y = state_name, color = ifelse(state_name %in% highlight_row, "High Prop LIJs Lost", ifelse(state_name %in% highlight_row1, "Low Prop LIJs Lost", "Other")))) +
+  geom_point(size = 5) +
+  labs(x = "Length of SD Requirement",
+       y = "", title = "Maximum Length of Social Distancing (SD) Requirement Duration",
+       subtitle = "States with no requirements: AZ, ND, SD",
+       caption = "Data Source: Health Data Gov.") +
+  theme_minimal() +
+  scale_color_manual(name = "Key", values = c("High Prop LIJs Lost" = "navy", "Low Prop LIJs Lost" = "seagreen4", "Other" = "lightblue"))
+
 
 #TESTS- DONT RUN THIS
 JL$state_name[!(JL$state_name %in% max_ban_duration_by_state$State_Tribe_Territory)]
