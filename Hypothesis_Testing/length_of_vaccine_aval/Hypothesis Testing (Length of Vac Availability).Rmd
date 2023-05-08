@@ -1,0 +1,146 @@
+---
+title: "Length of Vaccination Availibility"
+author: "Janelle Acob"
+date: "04.23.23"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(albersusa)
+library(plotly)
+library(ggplot2)
+covid19_vaccinations_state_prop <- read_csv("covid19_vaccinations_state_prop.csv", skip = 4)
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())
+}
+#https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/QoL/QoL.csv
+#https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv 
+QoL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/QoL/QoL.csv")
+JL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv")
+remote_work_2021 <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Remote_Work/remote_work_2021.csv")
+```
+
+### Vaccination Rates & Length of Vaccination Availability
+
+Proportion relative tot state population
+
+```{r}
+# first, filter data
+covid19_vaccinations_state_prop_new <- covid19_vaccinations_state_prop %>%
+  rename("State_Territory" = `Jurisdiction (State/Territory) or Federal Entity`, 
+         "Total_doses_distrubuted" = `Total doses distributed`,
+         "Doses_distributed_per_100K_pop" = `Doses distributed per 100K pop`,
+         "Doses_admin_by_jurisdiction_per_100K_pop" = `Doses administered by jurisdiction per 100K pop`,
+         "Percent_total_pop_with_completed_primary_series" = `Percent of total pop with a completed primary series`,
+         "Percent_total_pop_with_at_least_one_dose" = `Percent of total pop with at least one dose`) %>% 
+  mutate(State_Territory = str_replace(State_Territory, "New York State", "New York")) %>% 
+  mutate(Doses_admin_by_jurisdiction_per_100K_pop = as.integer(Doses_admin_by_jurisdiction_per_100K_pop)) %>% 
+  mutate(Percent_total_pop_with_completed_primary_series = as.integer(Percent_total_pop_with_completed_primary_series)) %>% 
+  mutate(Percent_total_pop_with_at_least_one_dose = as.integer(Percent_total_pop_with_at_least_one_dose))
+
+# join with geographic data for map
+us_states <- usa_sf("laea")
+
+#Cut points need to be the edges of your data, so the labels match the amount of space
+#create cutpoints & labels
+my_cutpoints <- c(0, 100000, 150000, 200000, 250000, 400000)
+my_labels <- c("0 - 100,000 +", "100,001 - 150,000", "150,001 - 200,000", "200,001 - 250,000", "250,000 +")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, covid19_vaccinations_state_prop_new, by = c("name" = "State_Territory")) %>% 
+  mutate(mar = cut(Doses_admin_by_jurisdiction_per_100K_pop, breaks = my_cutpoints, labels = my_labels))
+
+#add colors
+my_colors <- c("#0c2c84","#225ea8","#1d91c0","#41b6c4", 
+                        "#7fcdbb","#c7e9b4", "white") 
+
+#mar != margins
+#initial map
+ggplot(mapdata1) +
+  geom_sf(aes(fill= mar), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("", values = my_colors) +
+  labs(title="Total Doses Administered Reported\n to the CDC by State/Territory and\n for Select Federal Entities per\n 100K of the Total Population") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+```
+### Extra Stuff (Finalized)
+
+```{r}
+#Changed around the cutpoints to try to encapsulate the data better, feel free to use whichever you want.
+#create cutpoints & labels
+my_cutpoints <- c(100000, 150000, 175000, 200000, 250000, 400000)
+my_labels <- c("100,000 - 150,000", "150,001 - 175,000", "175,001 - 200,000", "200,001 - 250,000", "250,000 +")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, covid19_vaccinations_state_prop_new, by = c("name" = "State_Territory")) %>% 
+  mutate(mar = cut(Doses_admin_by_jurisdiction_per_100K_pop, breaks = my_cutpoints, labels = my_labels))
+
+#add colors
+my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
+                        "white","#c7e9b4")
+#initial map
+ggplot(mapdata1) +
+  geom_sf(aes(fill= mar), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("", values = my_colors) +
+  labs(title="Total Doses Administered Reported to the CDC by State/Territory\n and for Select Federal Entities per 100K of the Total Population") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+```
+
+### Hypothesis Testing (Length of Vaccine Availability (in the state))
+
+```{r}
+covid19_vaccinations_state_prop_new$Percent_total_pop_with_completed_primary_series <- covid19_vaccinations_state_prop_new$Percent_total_pop_with_completed_primary_series/100
+
+
+analysis_length <- merge(JL, covid19_vaccinations_state_prop_new, 
+                              by.x = "state_name", by.y = "State_Territory")
+cor.test(analysis_length$ProportionOfJobLossIndexToLowIncomeJobs, analysis_length$Percent_total_pop_with_completed_primary_series)
+
+View(analysis_length)
+#cor.test()
+```
+
+### Visualization for (Length of Vaccine Availability (in the state))
+Insert any text here.
+
+```{r}
+# first, filter data
+covid19_vaccinations_state_prop_new <- covid19_vaccinations_state_prop %>%
+  rename("State_Territory" = `Jurisdiction (State/Territory) or Federal Entity`, 
+         "Total_doses_distrubuted" = `Total doses distributed`,
+         "Doses_distributed_per_100K_pop" = `Doses distributed per 100K pop`,
+         "Doses_admin_by_jurisdiction_per_100K_pop" = `Doses administered by jurisdiction per 100K pop`,
+         "Percent_total_pop_with_completed_primary_series" = `Percent of total pop with a completed primary series`) %>%
+  mutate(State_Territory = str_replace(State_Territory, "New York State", "New York")) %>% 
+  mutate(Doses_admin_by_jurisdiction_per_100K_pop = as.integer(Doses_admin_by_jurisdiction_per_100K_pop)) %>% 
+  mutate(Percent_total_pop_with_completed_primary_series = as.integer(Percent_total_pop_with_completed_primary_series))
+
+# join with geographic data for map
+us_states <- usa_sf("laea")
+
+#Changed around the cutpoints to try to encapsulate the data better, feel free to use whichever you want.
+#create cutpoints & labels
+my_cutpoints <- c(40, 50, 65, 70, 90, 100)
+my_labels <- c("40 - 50", "50 - 65", "65 - 70", "70 - 90", "90 +")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, covid19_vaccinations_state_prop_new, by = c("name" = "State_Territory")) %>% 
+  mutate(mar = cut(Percent_total_pop_with_completed_primary_series, breaks = my_cutpoints, labels = my_labels))
+
+#add colors
+my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
+                        "white","#c7e9b4")
+#initial map
+ggplot(mapdata1) +
+  geom_sf(aes(fill= mar), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("", values = my_colors) +
+  labs(title="Percent Total Population with Completed Series reported to\nthe CDC by State/Territory and for Select Federal Entities") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+```
