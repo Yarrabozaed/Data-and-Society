@@ -43,15 +43,13 @@ highlight_row1 <- c("Idaho", "Utah")
 
 library(lubridate)
 library(scales)
-ggplot(analysis_sd, aes(x = max_ban_duration, y = state_name, color = ifelse(state_name %in% highlight_row, "High Prop LIJs Lost", ifelse(state_name %in% highlight_row1, "Low Prop LIJs Lost", "Other")))) +
-  geom_point(size = 5) +
+ggplot(analysis_sd, aes(x = 0, xend = max_ban_duration, y = reorder(state_name, ProportionOfJobLossIndexToLowIncomeJobs), yend = state_name)) +
+  geom_segment(color = "lightblue", size = 3) +
   labs(x = "Length of SD Requirement",
        y = "", title = "Maximum Length of Social Distancing (SD) Requirement Duration",
        subtitle = "States with no requirements: AZ, ND, SD",
        caption = "Data Source: Health Data Gov.") +
-  theme_minimal() +
-  scale_color_manual(name = "Key", values = c("High Prop LIJs Lost" = "navy", "Low Prop LIJs Lost" = "seagreen4", "Other" = "lightblue"))
-
+  theme_minimal() 
 
 #TESTS- DONT RUN THIS
 JL$state_name[!(JL$state_name %in% max_ban_duration_by_state$State_Tribe_Territory)]
