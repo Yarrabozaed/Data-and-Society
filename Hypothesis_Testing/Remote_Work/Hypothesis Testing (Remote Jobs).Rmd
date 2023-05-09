@@ -1,0 +1,32 @@
+---
+title: "Rate of Jobs that went Remote"
+author: "Janelle Acob"
+date: "04.23.23"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(albersusa)
+library(plotly)
+library(ggplot2)
+
+#https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/QoL/QoL.csv
+#https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv 
+QoL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/QoL/QoL.csv")
+JL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv")
+remote_work_2021 <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Remote_Work/remote_work_2021.csv")
+```
+
+### Hypothesis Testing (Proportion of Remote Workers)
+
+```{r}
+analysis_remoteWorkers <- merge(JL, remote_work_2021, 
+                              by.x = "state_name", by.y = "State")
+cor.test(analysis_remoteWorkers$ProportionOfJobLossIndexToLowIncomeJobs, analysis_remoteWorkers$Proportion_Remote_Workers)
+
+View(analysis_remoteWorkers)
+#cor.test()
+```
+

@@ -1,0 +1,38 @@
+---
+title: "Hypotheses Testing"
+author: "Author Name"
+date: "`r Sys.Date()`"
+output: openintro::lab_report
+---
+
+```{r load-packages, message=FALSE}
+library(tidyverse)
+library(openintro)
+library(readxl)
+library(haven)
+annual_wage = read_excel('average wage by state in 2019.xlsx')
+urlfile = "https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv"
+JL <- read_csv(url(urlfile))
+Political_Status <- read_sav("Documents/SPU 2022-2023/DAT4500 - Data and Society/Average Annual Wage 2019 by State/Political Status.sav")
+```
+
+### Average Annual Salary 2019 by State
+
+```{r}
+analysis_annualsalary <- merge(JL, annual_wage,
+                               by.x = "state_name", by.y = "State")
+cor.test(analysis_annualsalary$ProportionOfJobLossIndexToLowIncomeJobs,
+         analysis_annualsalary$Avg_Annual_Wage)
+View(analysis_annualsalary)
+```
+
+### Politial Status by State in 2020
+
+```{r}
+analysis_politicalstatus <- merge(JL, Political_Status,
+                                  by.x = "state_name", by.y = "State")
+cor.test(analysis_politicalstatus$ProportionOfJobLossIndexToLowIncomeJobs,
+         analysis_politicalstatus$Status)
+View(analysis_politicalstatus)
+```
+
