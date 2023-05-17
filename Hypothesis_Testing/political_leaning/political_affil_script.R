@@ -23,6 +23,23 @@ cor.test(analysis_political$ProportionOfJobLossIndexToLowIncomeJobs, analysis_po
 cor.test(analysis_political$ProportionOfJobLossIndexToLowIncomeJobs, analysis_political$`Republican/lean Rep.`)
 
 
+# https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/political_votes_2020/Popular%20vote%20backend%20-%20Sheet1.csv
+
+politcal <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/political_votes_2020/Popular%20vote%20backend%20-%20Sheet1.csv")
+JL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv")
+
+analysis_political <- merge(JL, politcal, by.x = "state_name", by.y = "state")  
+library(dplyr)
+#percentages <- gsub("%", "", percentages)
+analysis_political$prop_dem <- as.numeric(gsub("%", "", analysis_political$dem_percent))/100
+
+analysis_political$prop_rep <- as.numeric(gsub("%", "", analysis_political$rep_percent))/100
+
+View(analysis_political)
+cor.test(analysis_political$ProportionOfJobLossIndexToLowIncomeJobs, analysis_political$prop_dem)
+cor.test(analysis_political$ProportionOfJobLossIndexToLowIncomeJobs, analysis_political$prop_rep)
+
+
 #data:  analysis_political$ProportionOfJobLossIndexToLowIncomeJobs and analysis_political$`Republican/lean Rep.`
 #t = -7.9966, df = 49, p-value = 1.934e-10
 #alternative hypothesis: true correlation is not equal to 0

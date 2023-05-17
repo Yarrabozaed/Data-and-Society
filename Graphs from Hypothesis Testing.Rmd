@@ -167,18 +167,14 @@ View(mapdata1)
 ```
 
 ```{r}
-politcal <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/political_leaning/party_affiliation_2021.csv")
+politcal <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/political_votes_2020/Popular%20vote%20backend%20-%20Sheet1.csv")
+library(dplyr)
 
-politcal$`Republican/lean Rep.` <- gsub("%", "", politcal$`Republican/lean Rep.`, fixed = TRUE)
-politcal$`Republican/lean Rep.`<- as.numeric(politcal$`Republican/lean Rep.`)/100
+politcal$prop_dem <- as.numeric(gsub("%", "", politcal$dem_percent))/100
 
-politcal$`No lean` <- gsub("%", "", politcal$`No lean`, fixed = TRUE)
-politcal$`No lean`<- as.numeric(politcal$`No lean`)/100
+politcal$prop_rep <- as.numeric(gsub("%", "", politcal$rep_percent))/100
 
-politcal$`Democrat/lean Dem.` <- gsub("%", "", politcal$`Democrat/lean Dem.`, fixed = TRUE)
-politcal$`Democrat/lean Dem.`<- as.numeric(politcal$`Democrat/lean Dem.`)/100
-
-politcal$party <- ifelse(politcal$`Republican/lean Rep.` > politcal$`Democrat/lean Dem.`, "r", "d")
+politcal$party <- politcal$called
 
 mapdata1$party <- politcal$party
 
@@ -195,8 +191,6 @@ devtools::install_github("wmurphyrd/fiftystater")
 library(fiftystater)
 
 states <- rbind(map_data("state"))
-
-states <- st_as_sf(fifty_states, coords =c("long", "lat"), crs = 4326)
 
 states <- fifty_states
 #states <- map_data("state")
@@ -221,7 +215,7 @@ ggplot(choro, aes(long, lat)) +
   labs(title="Percent Total Population with at least one dose reported to\nthe CDC by State/Territory and for Select Federal Entities") +
   theme(legend.position = "top", legend.direction = "horizontal")
 
-politcal$region <- tolower(politcal$State)
+politcal$region <- tolower(politcal$state)
 
 
 
@@ -243,7 +237,7 @@ ggplot(choro, aes(long, lat, pattern = party)) +
   labs(title="Percent Total Population with at least one dose reported to\nthe CDC by State/Territory and for Select Federal Entities",
        pattern = "Political Party") +
   theme(legend.position = "top", legend.direction = "horizontal")+ 
-  scale_pattern_type_manual(values = c(r="stripe",d="none"), 
+  scale_pattern_type_manual(values = c(R="stripe",D="none"), 
                             guide = guide_legend(title = "Political Party"))+ 
   guides(
     pattern = guide_legend(
@@ -260,8 +254,8 @@ ggplot(choro, aes(long, lat, pattern = party)) +
   my_map_theme() +
   scale_fill_manual("", values = my_colors) +
   scale_pattern_manual(
-    values = c(r = "stripe", d = "none"),
-    labels = c(r = "Republican", d = "Democratic"),
+    values = c(R = "stripe", D = "none"),
+    labels = c(R = "Republican", D = "Democratic"),
     guide = guide_legend(title = "Political Party")
   ) +
   labs(
@@ -286,8 +280,8 @@ ggplot(choro, aes(long, lat, pattern = party)) +
   my_map_theme() +
   scale_fill_manual("", values = my_colors1) +
   scale_pattern_manual(
-    values = c(r = "stripe", d = "none"),
-    labels = c(r = "Republican", d = "Democratic"),
+    values = c(R = "stripe", D = "none"),
+    labels = c(R = "Republican", D = "Democratic"),
     guide = guide_legend(title = "Political Party")
   ) +
   labs(
