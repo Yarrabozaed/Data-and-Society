@@ -6,14 +6,17 @@ Project repo for data and society course (DAT 4500) :bulb::pencil2::bar_chart:.
 - Within the data, it *provides 20 names of the different work industries* so that we can compare the job loss index by state and by county across the country and see how they're different to each other. 
 - The *numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area  that consists of one or more counties) who lost their job*.
 
+# Research Question:
+- How did different states respond to the COVID-19 pandemic, and how do their responses impact the workfroce in the state?
+
 # Vocabulary:
 - **QoL**: Quality of life index.
 - **LIJ**: Low income jobs.
 
-# Avenues explored thus far:
+# Other Avenues Explored:
 - **QoL Index:** We tried to explore the quality of life changes in every state between 2018 (pre-pandemic) and 2021 (mid-pandemic) in the hopes of finding some correlation between the quality of life of the whole state and the low income jobs lost due to COVID-19. Our exploration has not shown any significant correlation between quality of life and the LIJs lost. We also didn't find a strong correlation between fiscal stability, economic ranking, and the opportunity metric of each state and the estimated LIJs lost in the state.
-- **Demographics impacted by LIJs lost:** In progress.
-- **Patterns in job loss by industry**: In progress.
+- **Demographics impacted by LIJs lost:** We explored some patterns based on race and gender. After some analysis, we pivoted down a different path.
+- **Patterns in job loss by industry**: We pivoted away from this path.
 
 # Contributors:
 - Yarra A.
