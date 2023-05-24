@@ -290,3 +290,4 @@ ggplot(choro, aes(long, lat, pattern = party)) +
   theme(legend.position = "top", legend.direction = "horizontal") +
   guides(fill = guide_legend(override.aes = list(pattern = "none")))
 ```
+
