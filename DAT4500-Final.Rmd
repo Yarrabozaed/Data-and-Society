@@ -230,7 +230,7 @@ This graph below represents the relationship between the rate of vaccinations (T
 
 #### [Length of Vaccine Availability](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total)
 
-Before doing the hypothesis testing, I had to compute the proportion of people who are vaccinated vs proportion of low income jobs lost in which we divided the percent total population with a completed series to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the Length of Vaccine Availability (by each state, the obtained p-value of 6.24 x 10-6 in which we reject the null hypothesis & correlation coefficient is 0.60.
+Before doing the hypothesis testing, we had to compute the proportion of people who are vaccinated vs proportion of low income jobs lost in which we divided the percent total population with a completed series to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the Length of Vaccine Availability (by each state, the obtained p-value of 6.24 x 10-6 in which we reject the null hypothesis & correlation coefficient is 0.60.
 
 These results signify a moderate positive correlation between the proportion of low-income jobs lost per state (by population) and the length of vaccine availability in the U.S (by each state). Furthermore, the 95% confidence interval of (0.3702306, 0.7418059) does not include 0, which further supports the conclusion that there is a relationship between these variables.  
 
@@ -240,6 +240,19 @@ In this graph, we wanted to highlight duration of vaccine availability. If the a
 #TODO
 ```
 
+### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_\(COVID-19\)_pandemic,_2020-2022)
+
+When conducting a hypothesis test to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the duration of masking requirements, the obtained p-value and correlation coefficient were 1.929*10^(-7) and 0.70 respectively. These results signify a strong, positive correlation between the estimated proportion of low-income jobs lost per state and the length of masking requirements. Therefore, states with lengthier masking requirements are expected to experience a higher proportion of job losses.
+
+The following graphic illustrates the connection between the duration of masking requirements, the proportion of job losses, and the political leaning of states in the 2020 primary elections. States with lengthier masking requirements tend to occupy the upper section of the plot, where a higher proportion of low-income jobs were lost. This section is predominantly populated by Democratic-majority states. In contrast, Republican-majority states generally exhibit shorter or no masking requirements, and they report smaller proportions of low-income jobs lost to the pandemic.
+
+
+```{r, echo=FALSE}
+library(ggplot2)
+library(scales)
+library(readr)
+
+```
 
 #### [Gathering Restrictions (Max Length)](https://healthdata.gov/dataset/U-S-State-and-Territorial-Gathering-Bans-March-11-/8tfm-md2h/data?no_mobile=true%E2%80%8B)
 
