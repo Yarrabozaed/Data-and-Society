@@ -1,6 +1,9 @@
 # Data and Society Project: Low Income Jobs Lost Due to COVID-19 
 Project repo for data and society course (DAT 4500) :bulb::pencil2::bar_chart:.
 
+# [Our Final Report](DAT4500-Final.md)
+Click the above title to read our final report!
+
 # Dataset Context:
 - The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to *estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US* based on the residence of workers. Low income those with (<$40,000 salary).
 - Within the data, it *provides 20 names of the different work industries* so that we can compare the job loss index by state and by county across the country and see how they're different to each other. 
