@@ -1,5 +1,5 @@
 # Data and Society Project: Low Income Jobs Lost Due to COVID-19 
-Project repo for data and society course (DAT 4500) :bulb::pencil2::bar_chart:.
+Project repo for data and society course (DAT 4500)!
 
 # [Our Final Report](DAT4500-Final.md)
 Click the above title to read our final report!
