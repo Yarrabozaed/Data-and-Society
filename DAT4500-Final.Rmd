@@ -25,7 +25,7 @@ This report was written by Yarra Abozaed, Janelle Acob, Zach Johansen, and Tim C
 
 ## Abstract
 
-[**TODO**]
+The COVID-19 pandemic has disproportionately impacted low-income individuals, resulting in significant job losses within this population. This abstract examines the specific challenges faced by low-income workers and explores the consequences of their job loss during the pandemic. Drawing upon available research and data, it highlights the economic, social, and psychological ramifications of this phenomenon and underscores the urgent need for targeted interventions to support and uplift this vulnerable group in the post-pandemic recovery efforts. We decided to do a mathematical measure of how different states respond to the covid pandemic and how does that affect the workforce on a state level and the impact it had on the workforce in said state while looking at external datasets to help us create a metric in correlation to this loss & continue to seek explanations to the relationship we find. By shedding light on the unique experiences and hardships faced by low-income individuals affected by job loss, this abstract aims to inform policymakers and organizations about the importance of addressing equity and inclusivity in employment strategies. 
 
 ## Introduction
 
@@ -39,7 +39,7 @@ Our objective is to assess the extent to which each discussed variable contribut
 
 ### [Original Dataset: Low Income Jobs Lost to COVID-19]() 
 
-[**TODO**]
+Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US based on the residence of workers. Low income those with (<$40,000 salary). Within the dataset, it provides 20 names of the different work industries, and this allows us to compare the job loss index by state and by county across the country and see how they're different to each other. The numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area that consists of one or more counties) who lost their job. The main variables consisted in the dataset are the state names, Proportion of Jobs Loss Index to Low Income Jobs, Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss amongst each state in the U.S. 
 
 ### [Rate of Vaccination](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total) 
 
