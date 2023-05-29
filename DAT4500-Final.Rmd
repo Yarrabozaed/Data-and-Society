@@ -37,6 +37,10 @@ Our objective is to assess the extent to which each discussed variable contribut
 
 ## Methods and Datasets
 
+### [Original Dataset: Low Income Jobs Lost to COVID-19]() 
+
+[**TODO**]
+
 ### [Rate of Vaccination](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total) 
 
 This data was collected by the CDC in which it highlights the covid-19 vaccinations distribution per state. It includes the number of people receiving at least one dose, the number of people who are fully vaccinated, and the number of people with an updated (bivalent) booster dose based on information reported to CDC on dose number, dose manufacturer, administration date, recipient ID, and date of submission. This dataset was last updated on May 10th, 2023. CDC estimates are based on data that include a dose number (first, second, or booster). To protect the privacy of vaccine recipients, CDC receives data without any personally identifiable information (deidentified data). Each jurisdiction or provider uses a unique person identifier to link records within their own systems. 

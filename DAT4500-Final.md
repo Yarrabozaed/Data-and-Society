@@ -41,6 +41,10 @@ health crises.
 
 ## Methods and Datasets
 
+### [Original Dataset: Low Income Jobs Lost to COVID-19]()
+
+\[**TODO**\]
+
 ### [Rate of Vaccination](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total)
 
 This data was collected by the CDC in which it highlights the covid-19
