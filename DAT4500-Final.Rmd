@@ -247,10 +247,85 @@ When conducting a hypothesis test to examine the relationship between the estima
 The following graphic illustrates the connection between the duration of masking requirements, the proportion of job losses, and the political leaning of states in the 2020 primary elections. States with lengthier masking requirements tend to occupy the upper section of the plot, where a higher proportion of low-income jobs were lost. This section is predominantly populated by Democratic-majority states. In contrast, Republican-majority states generally exhibit shorter or no masking requirements, and they report smaller proportions of low-income jobs lost to the pandemic.
 
 
-```{r, echo=FALSE}
+```{r echo=FALSE, fig.height=8, fig.width=10, message=FALSE, warning=FALSE, out.height='600px', out.width='800px'}
 library(ggplot2)
 library(scales)
 library(readr)
+library(lubridate)
+library(dplyr)
+
+data <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/masks.csv")
+
+
+mycols <- strsplit(as.character(data$Effective), "; ")
+mycols <- do.call(rbind, mycols)
+colnames(mycols) <- c("Effective_Initial", "Effective_Updated")
+data <- cbind(data, mycols)
+data$Effective <- NULL
+
+for (i in 1:nrow(data)) {
+  if (data$Effective_Initial[i] == data$Effective_Updated[i]) {
+    data$Effective_Updated[i] <- NA
+  }
+}
+
+
+mycols <- strsplit(as.character(data$`Type of order ending the mandate`), "; ")
+mycols <- do.call(rbind, mycols)
+colnames(mycols) <- c("EOT_Initial", "EOT_Updated")
+data <- cbind(data, mycols)
+data$`Type of order ending the mandate` <- NULL
+
+
+mycols <- strsplit(as.character(data$`Number of days effective`), ";")
+mycols <- do.call(rbind, mycols)
+colnames(mycols) <- c("Days_Initial", "Days_Updated")
+data <- cbind(data, mycols)
+data$`Number of days effective` <- NULL
+
+for (i in 1:nrow(data)) {
+  if (data$Days_Initial[i] == data$Days_Updated[i]) {
+    data$Days_Updated[i] <- NA
+  }
+}
+
+data$Effective_Initial <- as.Date(data$Effective_Initial, format = "%B %d, %Y")
+data$Effective_Updated <- as.Date(data$Effective_Updated, format = "%B %d, %Y")
+
+data$VaccExempt <- as.Date(data$Effective_Initial) + as.numeric(data$Days_Initial)
+data$VaccExempt <- as.Date(data$VaccExempt)
+
+data$VaccExempt_Updated <- as.Date(data$Effective_Updated) + as.numeric(data$Days_Updated)
+data$VaccExempt_Updated <- as.Date(data$VaccExempt_Updated)
+
+# Create the plot
+
+
+JL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv")
+
+tmp <- data
+data <- merge(JL, tmp, by.x = "state_name", by.y = "State")     
+
+politcal <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/political_votes_2020/Popular%20vote%20backend%20-%20Sheet1.csv")
+
+tmp1 <- data
+politcal$prop_dem <- as.numeric(gsub("%", "", politcal$dem_percent))/100
+
+politcal$prop_rep <- as.numeric(gsub("%", "", politcal$rep_percent))/100
+data <- merge(politcal, tmp1, by.x = "state", by.y = "state_name")
+#FINAL GRAPH 
+ggplot(data, aes(x = Effective_Initial, y = reorder(state, ProportionOfJobLossIndexToLowIncomeJobs), ProportionOfJobLossIndexToLowIncomeJobs))+
+  geom_segment(aes(x = Effective_Initial,  y = reorder(state, ProportionOfJobLossIndexToLowIncomeJobs), xend = VaccExempt, yend = state, color = ifelse(called == "D", "navy", "red")), size = 1) +
+  geom_segment(aes(x = Effective_Updated, y = state, xend = VaccExempt_Updated, yend = state, color = ifelse(called == "D", "navy", "red")), size = 1) +
+  scale_x_date(date_breaks = "3 months", labels = date_format("%Y-%m")) +
+  scale_color_manual(name = "", values = c("navy", "red"), labels = c("Democrat","Republican")) +
+  labs(x = "Effective Date of Statewide Mask Mandate",
+       y = "", title = "Mask Requirement Timelines in States with Statewide Requirements",
+       subtitle = "Sorted by: Low Income Jobs Lost in 2021*. Colored by: Party Leaning in 2020 Elections",
+       caption = "*Low-income jobs lost is by proportion relative to the population of the state. Sorted from high to low.") +
+  theme_minimal() + 
+  geom_text(aes(x = as.Date("2022-04-01"), y = state,label = round(ProportionOfJobLossIndexToLowIncomeJobs, 3)), hjust = 0, size = 2.5, color = "grey2") + 
+  theme(plot.caption = element_text(face = "italic"))
 
 ```
 
@@ -260,8 +335,53 @@ Hypothesis testing between the max gathering bans variable and low-income jobs l
 
 The visual below illustrates the relationship between these variables. The plot is arranged in descending order of the proportion of low-income jobs lost in each state, ranging from high to low. It can be observed that states with longer gathering restrictions tend to exhibit a higher proportion of low-income jobs lost. Due to the moderate correlation between the variables, discerning the pattern in such a plot can be challenging compared to, for instance, the duration of masking requirements.
 
-```{r, echo=FALSE}
-#TODO
+```{r echo=FALSE, fig.height=8, fig.width=10, message=FALSE, warning=FALSE, out.height='600px', out.width='800px'}
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(readr)
+library(ggplot2)
+
+#This data-set is MASSIVE, download at your own discretion 
+
+Bans <- read_csv("https://data.cdc.gov/api/views/3qs9-qnbs/rows.csv?accessType=DOWNLOAD")
+Bans$Date <- as.Date(Bans$Date)
+
+Bans_filtered <- Bans %>% filter(General_or_Under_6ft_Bans_Gatherings_Over != -1)
+
+max_ban_duration_by_state <- Bans_filtered %>%
+  group_by(State_Tribe_Territory) %>%
+  summarize(max_ban_duration = max(Date) - min(Date))
+
+
+az <- data.frame(State_Tribe_Territory = "Arizona", max_ban_duration = 0)
+nd <- data.frame(State_Tribe_Territory = "North Dakota", max_ban_duration = 0)
+sd <- data.frame(State_Tribe_Territory = "South Dakota", max_ban_duration = 0)
+# add the new row to the existing data frame
+max_ban_duration_by_state <- rbind(max_ban_duration_by_state, az)
+max_ban_duration_by_state <- rbind(max_ban_duration_by_state, nd)
+max_ban_duration_by_state <- rbind(max_ban_duration_by_state, sd)
+
+JL <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Mask_Req_Length/JL_by_state.csv")
+
+analysis_sd <- merge(JL, max_ban_duration_by_state, by.x = "state_name", by.y = "State_Tribe_Territory") 
+analysis_sd$max_ban_duration <- as.integer(gsub(" days", "", analysis_sd$max_ban_duration))
+
+highlight_row <- c("Hawaii", "New York", "District of Columbia")
+
+highlight_row1 <- c("Idaho", "Utah")
+
+
+
+library(lubridate)
+library(scales)
+ggplot(analysis_sd, aes(x = 0, xend = max_ban_duration, y = reorder(state_name, ProportionOfJobLossIndexToLowIncomeJobs), yend = state_name)) +
+  geom_segment(color = "lightblue", size = 3) +
+  labs(x = "Length of SD Requirement",
+       y = "", title = "Maximum Length of Social Distancing (SD) Requirement Duration",
+       subtitle = "States with no requirements: AZ, ND, SD",
+       caption = "Data Source: Health Data Gov.") +
+  theme_minimal() 
 ```
 
 #### [Average Salary per State](https://www.statista.com/statistics/243850/private-industry-wages-per-employee-in-the-us-by-state/)

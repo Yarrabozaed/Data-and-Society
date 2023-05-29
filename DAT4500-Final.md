@@ -655,7 +655,7 @@ vaccinations administered.
 
 #### [Length of Vaccine Availability](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total)
 
-Before doing the hypothesis testing, I had to compute the proportion of
+Before doing the hypothesis testing, we had to compute the proportion of
 people who are vaccinated vs proportion of low income jobs lost in which
 we divided the percent total population with a completed series to
 examine the relationship between the estimated proportion of low-income
@@ -684,6 +684,29 @@ an extended period, leading to closures or downsizing. This can lead to
 job losses, particularly for low-income workers employed in sectors that
 are heavily impacted and unable to adapt to changing market conditions.
 
+### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_(COVID-19)_pandemic,_2020-2022)
+
+When conducting a hypothesis test to examine the relationship between
+the estimated proportion of low-income jobs lost due to COVID-19 and the
+duration of masking requirements, the obtained p-value and correlation
+coefficient were 1.929\*10^(-7) and 0.70 respectively. These results
+signify a strong, positive correlation between the estimated proportion
+of low-income jobs lost per state and the length of masking
+requirements. Therefore, states with lengthier masking requirements are
+expected to experience a higher proportion of job losses.
+
+The following graphic illustrates the connection between the duration of
+masking requirements, the proportion of job losses, and the political
+leaning of states in the 2020 primary elections. States with lengthier
+masking requirements tend to occupy the upper section of the plot, where
+a higher proportion of low-income jobs were lost. This section is
+predominantly populated by Democratic-majority states. In contrast,
+Republican-majority states generally exhibit shorter or no masking
+requirements, and they report smaller proportions of low-income jobs
+lost to the pandemic.
+
+<img src="DAT4500-Final_files/figure-gfm/unnamed-chunk-8-1.png" width="800px" height="600px" />
+
 #### [Gathering Restrictions (Max Length)](https://healthdata.gov/dataset/U-S-State-and-Territorial-Gathering-Bans-March-11-/8tfm-md2h/data?no_mobile=true%E2%80%8B)
 
 Hypothesis testing between the max gathering bans variable and
@@ -702,6 +725,8 @@ proportion of low-income jobs lost. Due to the moderate correlation
 between the variables, discerning the pattern in such a plot can be
 challenging compared to, for instance, the duration of masking
 requirements.
+
+<img src="DAT4500-Final_files/figure-gfm/unnamed-chunk-9-1.png" width="800px" height="600px" />
 
 #### [Average Salary per State](https://www.statista.com/statistics/243850/private-industry-wages-per-employee-in-the-us-by-state/)
 
