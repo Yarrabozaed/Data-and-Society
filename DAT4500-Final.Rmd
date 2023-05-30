@@ -516,7 +516,7 @@ library(albersusa)
 library(plotly)
 library(ggplot2)
 covid19_vaccinations_state_prop <- read_csv("covid19_vaccinations_state_prop.csv", skip = 4)
-remote_work_2021 <- read_excel("remote_work_2021.xlsx")
+remote_work_2021 <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Remote_Work/remote_work_2021.csv")
 my_map_theme <- function(){
   theme(panel.background=element_blank(),
         axis.text=element_blank(),
