@@ -463,7 +463,48 @@ These results signify a weak but positive correlation between the proportion of 
 This graph shows the relationship between these two variables. We wanted to highlight how big of an impact the covid-19 pandemic affected the work industry in the U.S, how many people had to transition into doing remote work, and how it also had an impact of people losing their jobs as well. Remote work allows companies to hire employees from anywhere, leading to increased competition for certain jobs. Low-income workers who were previously employed in industries that are now remote-capable may face difficulties in securing remote positions. Another thing is that the shift to remote work can trigger broader structural changes in industries. For instance, reduced demand for office space, business travel, or in-person services can lead to downsizing or closures of businesses that predominantly employ low-income workers. The transition to remote work may not be feasible for industries that heavily rely on face-to-face interactions or physical presence.
 
 ```{r, echo=FALSE}
-#TODO
+library(tidyverse)
+library(openintro)
+library(albersusa)
+library(plotly)
+library(ggplot2)
+covid19_vaccinations_state_prop <- read_csv("covid19_vaccinations_state_prop.csv", skip = 4)
+remote_work_2021 <- read_excel("remote_work_2021.xlsx")
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())
+}
+
+# first, filter data
+remote_work_2021_new <- remote_work_2021 %>% 
+  mutate(Proportion_Remote_Workers_computed = Proportion_Remote_Workers*100)
+
+# join with geographic data for map
+us_states <- usa_sf("laea")
+
+#Changed around the cutpoints to try to encapsulate the data better, feel free to use whichever you want.
+#create cutpoints & labels
+my_cutpoints <- c(10.0, 15.0, 20.0, 25.0, 30.0, 50.0)
+my_labels <- c("0 - 10%", "10 - 15%", "15 - 20%", "20 - 30%", "50% +")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, remote_work_2021_new, by = c("name" = "State")) %>% 
+  mutate(mar = cut(Proportion_Remote_Workers_computed, breaks = my_cutpoints, labels = my_labels))
+
+mapdata2 <- mapdata1[-6,]
+
+#add colors
+my_colors <- c("#d0d1e6","#a6bddb","#67a9cf","#1c9099","#016c59",
+                        "white","#f6eff7")
+#initial map
+ggplot(mapdata2) +
+  geom_sf(aes(fill= mar), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("", values = my_colors) +
+  labs(title="States Where the Most People Worked Remote\nBecause of COVID-19 (Proportion)") +
+  theme(legend.position = "top", legend.direction = "horizontal")
 ```
 
 #### PCA
