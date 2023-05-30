@@ -235,19 +235,7 @@ These results signify a moderate positive correlation between the proportion of 
 
 This graph below represents the relationship between the rate of vaccinations (Total Doses Administered per state) and the proportion of jobs loss. What does this mean? Certain states either pushed for vaccinations less compared to others or the citizens of the states were not interested in getting vaccinated. Does that mean the less strict a state is, the fewer jobs it lost? You would assume that if a state is stricter, then they would be able to reopen businesses faster, thus losing less workers? Many businesses & states pushed for vaccinations & probably made it mandatory to work so that is why some states have more vaccinations administered.
 
-```{r, echo=FALSE}
-#TODO
-```
-
-#### [Length of Vaccine Availability](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total)
-
-Before doing the hypothesis testing, we had to compute the proportion of people who are vaccinated vs proportion of low income jobs lost in which we divided the percent total population with a completed series to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the Length of Vaccine Availability (by each state, the obtained p-value of 6.24 x 10-6 in which we reject the null hypothesis & correlation coefficient is 0.60.
-
-These results signify a moderate positive correlation between the proportion of low-income jobs lost per state (by population) and the length of vaccine availability in the U.S (by each state). Furthermore, the 95% confidence interval of (0.3702306, 0.7418059) does not include 0, which further supports the conclusion that there is a relationship between these variables.  
-
-In this graph, we wanted to highlight duration of vaccine availability. If the availability and distribution of vaccines are delayed or prolonged, it can extend the duration of the COVID-19 pandemic. This, in turn, can have severe economic consequences, including business closures, reduced consumer spending, and job losses across various sectors. Low-income workers are often employed in industries that have been disproportionately affected by the pandemic, such as hospitality, retail, and personal services, making them particularly vulnerable to job losses. Also, this issue can result in shifts and changes within industries. Some businesses may struggle to sustain their operations for an extended period, leading to closures or downsizing. This can lead to job losses, particularly for low-income workers employed in sectors that are heavily impacted and unable to adapt to changing market conditions.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(openintro)
 library(albersusa)
@@ -268,22 +256,23 @@ covid19_vaccinations_state_prop_new <- covid19_vaccinations_state_prop %>%
          "Total_doses_distrubuted" = `Total doses distributed`,
          "Doses_distributed_per_100K_pop" = `Doses distributed per 100K pop`,
          "Doses_admin_by_jurisdiction_per_100K_pop" = `Doses administered by jurisdiction per 100K pop`,
-         "Percent_total_pop_with_completed_primary_series" = `Percent of total pop with a completed primary series`) %>%
+         "Percent_total_pop_with_completed_primary_series" = `Percent of total pop with a completed primary series`,
+         "Percent_total_pop_with_at_least_one_dose" = `Percent of total pop with at least one dose`) %>% 
   mutate(State_Territory = str_replace(State_Territory, "New York State", "New York")) %>% 
   mutate(Doses_admin_by_jurisdiction_per_100K_pop = as.integer(Doses_admin_by_jurisdiction_per_100K_pop)) %>% 
-  mutate(Percent_total_pop_with_completed_primary_series = as.integer(Percent_total_pop_with_completed_primary_series))
+  mutate(Percent_total_pop_with_completed_primary_series = as.integer(Percent_total_pop_with_completed_primary_series)) %>% 
+  mutate(Percent_total_pop_with_at_least_one_dose = as.integer(Percent_total_pop_with_at_least_one_dose))
 
 # join with geographic data for map
 us_states <- usa_sf("laea")
-
 #Changed around the cutpoints to try to encapsulate the data better, feel free to use whichever you want.
 #create cutpoints & labels
-my_cutpoints <- c(40, 50, 65, 70, 90, 100)
-my_labels <- c("40 - 50%", "50 - 65%", "65 - 70%", "70 - 90%", "90% +")
+my_cutpoints <- c(100000, 150000, 175000, 200000, 250000, 400000)
+my_labels <- c("100,000 - 150,000", "150,001 - 175,000", "175,001 - 200,000", "200,001 - 250,000", "250,000 +")
 
 #join us_states data with covid-19 vaccination data
 mapdata1 <- left_join(us_states, covid19_vaccinations_state_prop_new, by = c("name" = "State_Territory")) %>% 
-  mutate(mar = cut(Percent_total_pop_with_completed_primary_series, breaks = my_cutpoints, labels = my_labels))
+  mutate(mar = cut(Doses_admin_by_jurisdiction_per_100K_pop, breaks = my_cutpoints, labels = my_labels))
 
 #add colors
 my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
@@ -293,8 +282,127 @@ ggplot(mapdata1) +
   geom_sf(aes(fill= mar), color = "black") +
   my_map_theme() +
   scale_fill_manual("", values = my_colors) +
-  labs(title="Percent Total Population with Completed Series reported to\nthe CDC by State/Territory and for Select Federal Entities") +
+  labs(title="Total Doses Administered Reported to the CDC by State/Territory\n and for Select Federal Entities per 100K of the Total Population") +
   theme(legend.position = "top", legend.direction = "horizontal")
+```
+
+#### [Length of Vaccine Availability](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total)
+
+Before doing the hypothesis testing, we had to compute the proportion of people who are vaccinated vs proportion of low income jobs lost in which we divided the percent total population with a completed series to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the Length of Vaccine Availability (by each state, the obtained p-value of 6.24 x 10-6 in which we reject the null hypothesis & correlation coefficient is 0.60.
+
+These results signify a moderate positive correlation between the proportion of low-income jobs lost per state (by population) and the length of vaccine availability in the U.S (by each state). Furthermore, the 95% confidence interval of (0.3702306, 0.7418059) does not include 0, which further supports the conclusion that there is a relationship between these variables.  
+
+In this graph, we wanted to highlight duration of vaccine availability. If the availability and distribution of vaccines are delayed or prolonged, it can extend the duration of the COVID-19 pandemic. This, in turn, can have severe economic consequences, including business closures, reduced consumer spending, and job losses across various sectors. Low-income workers are often employed in industries that have been disproportionately affected by the pandemic, such as hospitality, retail, and personal services, making them particularly vulnerable to job losses. Also, this issue can result in shifts and changes within industries. Some businesses may struggle to sustain their operations for an extended period, leading to closures or downsizing. This can lead to job losses, particularly for low-income workers employed in sectors that are heavily impacted and unable to adapt to changing market conditions.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(openintro)
+library(albersusa)
+library(plotly)
+library(ggplot2)
+covid19_vaccinations_state_prop <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/rate_of_vaccination/covid19_vaccinations_state_prop.csv", skip = 4)
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())
+}
+
+covid19_vaccinations_state_prop_new <- covid19_vaccinations_state_prop %>%
+  rename("State_Territory" = `Jurisdiction (State/Territory) or Federal Entity`, 
+         "Total_doses_distrubuted" = `Total doses distributed`,
+         "Doses_distributed_per_100K_pop" = `Doses distributed per 100K pop`,
+         "Doses_admin_by_jurisdiction_per_100K_pop" = `Doses administered by jurisdiction per 100K pop`,
+         "Percent_total_pop_with_completed_primary_series" = `Percent of total pop with a completed primary series`,
+         "Percent_total_pop_with_at_least_one_dose" = `Percent of total pop with at least one dose`) %>% 
+  mutate(State_Territory = str_replace(State_Territory, "New York State", "New York")) %>% 
+  mutate(Doses_admin_by_jurisdiction_per_100K_pop = as.integer(Doses_admin_by_jurisdiction_per_100K_pop)) %>% 
+  mutate(Percent_total_pop_with_completed_primary_series = as.integer(Percent_total_pop_with_completed_primary_series)) %>% 
+  mutate(Percent_total_pop_with_at_least_one_dose = as.integer(Percent_total_pop_with_at_least_one_dose))
+politcal <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/political_votes_2020/Popular%20vote%20backend%20-%20Sheet1.csv")
+
+# join with geographic data for map
+us_states <- usa_sf("laea")
+
+#Cut points need to be the edges of your data, so the labels match the amount of space
+#create cutpoints & labels
+my_cutpoints <- c(0, 100000, 150000, 200000, 250000, 400000)
+my_labels <- c("0 - 100,000 +", "100,001 - 150,000", "150,001 - 200,000", "200,001 - 250,000", "250,000 +")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, covid19_vaccinations_state_prop_new, by = c("name" = "State_Territory")) %>% 
+  mutate(mar = cut(Doses_admin_by_jurisdiction_per_100K_pop, breaks = my_cutpoints, labels = my_labels))
+
+library(dplyr)
+
+politcal$prop_dem <- as.numeric(gsub("%", "", politcal$dem_percent))/100
+
+politcal$prop_rep <- as.numeric(gsub("%", "", politcal$rep_percent))/100
+
+politcal$party <- politcal$called
+
+#mapdata1$party <- politcal$party
+
+library(ggplot2)
+remotes::install_github("coolbutuseless/ggpattern")
+
+my_colors <- c("#A22015","#DC4631","#6783B8","#0E2549","navy")
+
+library(ggplot2)
+library(ggpattern)
+library(maps)
+devtools::install_github("wmurphyrd/fiftystater")
+library(fiftystater)
+
+states <- rbind(map_data("state"))
+
+states <- fifty_states
+
+info <- covid19_vaccinations_state_prop_new
+
+info$State_Territory <- tolower(info$State_Territory)
+info$region <- info$state_territory
+choro <- merge(states, info, sort = FALSE, by.x = "id", by.y = "State_Territory",all.x = TRUE)
+
+choro <- choro[order(choro$order), ]
+
+choro$mar <- cut(choro$Percent_total_pop_with_at_least_one_dose, breaks = my_cutpoints, labels = my_labels)
+
+politcal$region <- tolower(politcal$state)
+
+choro$party <- vector("character", nrow(choro))
+
+for (i in 1:nrow(choro)) {
+  region <- choro[i, "id"]
+  p <- politcal$party[politcal$region == region]
+  choro[i, "party"] <- p
+}
+
+my_cutpoints1 <- c(40, 50, 60, 70, 80, 100)
+my_labels1 <- c("40 - 50%", "50 - 60%", "60 - 70%", "70 - 80%", "80% +")
+
+choro$mar1 <- cut(choro$Percent_total_pop_with_completed_primary_series, breaks = my_cutpoints1, labels = my_labels1)
+
+#add colors
+#my_colors1 <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84","white","#c7e9b4")
+
+my_colors1 <- my_colors
+
+ggplot(choro, aes(long, lat, pattern = party)) +
+  geom_polygon_pattern(aes(group = group, fill = mar1), color = "black", pattern_fill = "white") +
+  coord_map("albers", lat0 = 45.5, lat1 = 29.5) +
+  my_map_theme() +
+  scale_fill_manual("", values = my_colors1) +
+  scale_pattern_manual(
+    values = c(R = "stripe", D = "none"),
+    labels = c(R = "Republican", D = "Democratic"),
+    guide = guide_legend(title = "Political Party")
+  ) +
+  labs(
+    title = "Percent Total Population with Completed Series reported to\nthe CDC by State/Territory and for Select Federal Entities"
+  ) +
+  theme(legend.position = "top", legend.direction = "horizontal") +
+  guides(fill = guide_legend(override.aes = list(pattern = "none")))
 ```
 
 #### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_\(COVID-19\)_pandemic,_2020-2022)
@@ -469,8 +577,49 @@ These results signify a weak but positive correlation between the proportion of 
 
 This graph shows the relationship between these two variables. We wanted to highlight how big of an impact the covid-19 pandemic affected the work industry in the U.S, how many people had to transition into doing remote work, and how it also had an impact of people losing their jobs as well. Remote work allows companies to hire employees from anywhere, leading to increased competition for certain jobs. Low-income workers who were previously employed in industries that are now remote-capable may face difficulties in securing remote positions. Another thing is that the shift to remote work can trigger broader structural changes in industries. For instance, reduced demand for office space, business travel, or in-person services can lead to downsizing or closures of businesses that predominantly employ low-income workers. The transition to remote work may not be feasible for industries that heavily rely on face-to-face interactions or physical presence.
 
-```{r, echo=FALSE}
-#TODO
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(openintro)
+library(albersusa)
+library(plotly)
+library(ggplot2)
+covid19_vaccinations_state_prop <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/length_of_vaccine_aval/covid19_vaccinations_state_prop.csv", skip = 4)
+remote_work_2021 <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Remote_Work/remote_work_2021.csv")
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())
+}
+
+# first, filter data
+remote_work_2021_new <- remote_work_2021 %>% 
+  mutate(Proportion_Remote_Workers_computed = Proportion_Remote_Workers*100)
+
+# join with geographic data for map
+us_states <- usa_sf("laea")
+
+#Changed around the cutpoints to try to encapsulate the data better, feel free to use whichever you want.
+#create cutpoints & labels
+my_cutpoints <- c(10.0, 15.0, 20.0, 25.0, 30.0, 50.0)
+my_labels <- c("0 - 10%", "10 - 15%", "15 - 20%", "20 - 30%", "50% +")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, remote_work_2021_new, by = c("name" = "State")) %>% 
+  mutate(mar = cut(Proportion_Remote_Workers_computed, breaks = my_cutpoints, labels = my_labels))
+
+mapdata2 <- mapdata1[-6,]
+
+#add colors
+my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
+                        "white","#c7e9b4")
+#initial map
+ggplot(mapdata2) +
+  geom_sf(aes(fill= mar), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("", values = my_colors) +
+  labs(title="States Where the Most People Worked Remote\nBecause of COVID-19 (Proportion)") +
+  theme(legend.position = "top", legend.direction = "horizontal")
 ```
 
 ### PCA
