@@ -59,8 +59,7 @@ The variable "Gathering Restrictions (max length)" was derived from the gatherin
 
 ### [Average Salary per State](https://www.statista.com/statistics/243850/private-industry-wages-per-employee-in-the-us-by-state/)
 
-[**TODO**]
-
+The data was collected by the Bureau of Labor Statistics, which was released in September 2022. It represents the average annual private industry mean wages per employee in the United States by state in 2011. It includes all fifty states’ average salary in 2011 in U.S. dollars. Additionally, average salary for District of Columbia and United States are included, which are not accounted for in the variable’s statistical analysis.  
 
 ### [Healthcare Rank](https://www.usnews.com/news/best-states/articles/methodology)
 
@@ -142,9 +141,9 @@ kableExtra::scroll_box(kbl2)
 ```
 
 
-### [Proportion of Democratic Voters]()
+### [Proportion of Democratic Voters](https://www.cookpolitical.com/2020-national-popular-vote-tracker)
 
-[**TODO**]
+The data was collected by the Cook Political Report, tracking the electoral vote counts for each state for the 2020 presidential election. It represents the number of votes each party received for each state, whether democratic (Biden Votes – blue), republican (Trump Votes – red), or other (third-party). Additionally, the tracker shows how much share each party has for each state in percentage. The election map vote tracker shows that democratic states are more in both the western and eastern parts of the country, whereas the republican states are more in the middle portion.
 
 ### [Rate of Jobs that went Remote](https://www.teamflowhq.com/blog/states-where-the-most-people-worked-remote-because-of-covid-19)
 
@@ -483,23 +482,46 @@ ggplot(analysis_sd, aes(x = 0, xend = max_ban_duration, y = reorder(state_name, 
 
 #### [Average Salary per State](https://www.statista.com/statistics/243850/private-industry-wages-per-employee-in-the-us-by-state/)
 
-[**TODO**]
+According to the hypothesis test on the relationship between average salary and low-income jobs lost, a p-value of 0.00113 and a correlation coefficient of 0.447 are provided. We conclude that there is a moderate correlation between the proportion of low-income jobs lost per state (by population) and the average salary per state. This means that an increase in annual wage is associated with a higher proportion of low-income jobs lost. 
+
+Based on the following visualization, the map shows the average annual wage per state in 2021 color-coded. The higher the average annual wage, the brighter the state, and the lower the average annual wage, the darker the state. Washington, California, New York, and Massachusetts have the highest average annual wage in 2021, whereas some mid-Eastern and Western states have the lowest average.
 
 ```{r, echo=FALSE}
-#TODO
+library(tidyverse)
+library(openintro)
+library(albersusa)
+library(readxl)
+annual_wage = read_excel('average wage by state in 2019.xlsx')
+us_states <- usa_sf("laea")
+
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())
+}
+
+annualsalary_map <- left_join(us_states, annual_wage, by=c('name' = 'State'))
+
+annualsalary_map <- annualsalary_map %>%
+  select(name, iso_3166_2, Avg_Annual_Wage, geometry)
+
+ggplot(annualsalary_map) +
+  geom_sf(aes(fill = Avg_Annual_Wage)) +
+  scale_fill_continuous(low = "red", high = "green") + 
+  my_map_theme() +
+  labs(title = "Average Annual Wage Across States in 2021") +
+  theme(plot.title = element_text(hjust = -2.5, size = 20)) +
+  guides(fill = guide_legend(title = "Average Annual Wage"))
 ```
 
 #### [Healthcare Rank](https://www.usnews.com/news/best-states/articles/methodology)
 
 Hypothesis testing between the health rank of each state and low-income jobs lost provided a p-value and correlation coefficient of 1.1*10^(-3) and -0.50, respectively. Based on these findings, we conclude that there is a negative and moderate correlation between the two variables. In other words, a decrease in the health rank of a state is associated with a lower proportion of low-income jobs lost.
 
-#### [Proportion of Democratic Voters]()
+#### [Proportion of Democratic Voters](https://www.cookpolitical.com/2020-national-popular-vote-tracker)
 
-[**TODO**]
-
-```{r, echo=FALSE}
-#TODO
-```
+According to the hypothesis test on the relationship between the proportion of Democratic voters and low-income jobs lost, a p-value of 1.909 x 10-6 (0.000001909) and a correlation coefficient of 0.61 are provided. We conclude that there is a strong, positive correlation between the proportion of low-income jobs lost per state (by population) and the proportion of democratic voters. This means that an increase in the proportion of democratic voters is associated with a higher proportion of low-income jobs lost. 
 
 #### [Rate of Jobs that went Remote](https://www.teamflowhq.com/blog/states-where-the-most-people-worked-remote-because-of-covid-19)
 
