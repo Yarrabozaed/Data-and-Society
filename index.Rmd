@@ -46,7 +46,7 @@ Our objective is to assess the extent to which each discussed variable contribut
 
 ### [Original Dataset: Low Income Jobs Lost to COVID-19](https://datacatalog.urban.org/dataset/estimated-low-income-jobs-lost-covid-19) 
 
-Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US based on the residence of workers. Low income those with (<$40,000 salary). Within the dataset, it provides 20 names of the different work industries, and this allows us to compare the job loss index by state and by county across the country and see how they're different to each other. The numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area that consists of one or more counties) who lost their job. The main variables consisted in the dataset are the state names, Proportion of Jobs Loss Index to Low Income Jobs, Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss amongst each state in the U.S. 
+Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US based on the residence of workers. Low income those with (<$40,000 salary). Within the dataset, it provides 20 names of the different work industries, and this allows us to compare the job loss index by state and by county across the country and see how they're different to each other. The numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area that consists of one or more counties) who lost their job. The main variables consisted in the dataset are the state names, Proportion of Jobs Loss Index to Low Income Jobs, Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss amongst each state in the U.S.
 
 ### [Rate of Vaccination](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total) 
 
@@ -557,8 +557,8 @@ Based on the following visualization, the map shows the average annual wage per 
 library(tidyverse)
 library(openintro)
 library(albersusa)
-library(readxl)
-annual_wage = read_excel('https://github.com/Yarrabozaed/Data-and-Society/blob/main/average%20wage%20by%20state%20in%202019.xlsx')
+library(readr)
+annual_wage = read_csv('https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/avg_salary_per_state/salary_2019.csv')
 us_states <- usa_sf("laea")
 
 my_map_theme <- function(){
@@ -573,13 +573,25 @@ annualsalary_map <- left_join(us_states, annual_wage, by=c('name' = 'State'))
 annualsalary_map <- annualsalary_map %>%
   select(name, iso_3166_2, Avg_Annual_Wage, geometry)
 
+annualsalary_map <- annualsalary_map[-6,]
+breaks <- c(40000, 50000, 60000, 70000, 80000, max(annualsalary_map$Avg_Annual_Wage))
+labels <- c("40k-50k", "50k-60k", "60k-70k", "70k-80k", "80k+")
+
+# Cut the Avg_Annual_Wage variable into discrete categories
+annualsalary_map$Wage_Category <- cut(annualsalary_map$Avg_Annual_Wage, breaks = breaks, labels = labels, include.lowest = TRUE)
+
+# Define your custom colors
+my_colors <- c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84", "white", "#c7e9b4")
+
+# Plot with custom colors
 ggplot(annualsalary_map) +
-  geom_sf(aes(fill = Avg_Annual_Wage)) +
-  scale_fill_continuous(low = "red", high = "green") + 
+  geom_sf(aes(fill = Wage_Category)) +
+  scale_fill_manual(values = my_colors) +
   my_map_theme() +
   labs(title = "Average Annual Wage Across States in 2021") +
-  theme(plot.title = element_text(hjust = -2.5, size = 20)) +
+  theme(legend.position = "top", legend.direction = "horizontal")+
   guides(fill = guide_legend(title = "Average Annual Wage"))
+
 ```
 
 #### [Healthcare Rank](https://www.usnews.com/news/best-states/articles/methodology)
@@ -588,11 +600,7 @@ Hypothesis testing between the health rank of each state and low-income jobs los
 
 #### [Proportion of Democratic Voters](https://www.cookpolitical.com/2020-national-popular-vote-tracker)
 
-[**TODO**]
-
-```{r, echo=FALSE}
-#TODO
-```
+According to the hypothesis test on the relationship between the proportion of Democratic voters and low-income jobs lost, a p-value of 1.909 x 10-6 (0.000001909) and a correlation coefficient of 0.61 are provided. We conclude that there is a strong, positive correlation between the proportion of low-income jobs lost per state (by population) and the proportion of democratic voters. This means that an increase in the proportion of democratic voters is associated with a higher proportion of low-income jobs lost. 
 
 #### [Rate of Jobs that went Remote](https://www.teamflowhq.com/blog/states-where-the-most-people-worked-remote-because-of-covid-19)
 
@@ -650,6 +658,10 @@ ggplot(mapdata2) +
 ### PCA
 
 [**TODO**]
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#[TODO]
+```
 
 ## Discussion
 
