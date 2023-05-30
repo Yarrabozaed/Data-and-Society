@@ -688,7 +688,7 @@ an extended period, leading to closures or downsizing. This can lead to
 job losses, particularly for low-income workers employed in sectors that
 are heavily impacted and unable to adapt to changing market conditions.
 
-### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_(COVID-19)_pandemic,_2020-2022)
+#### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_(COVID-19)_pandemic,_2020-2022)
 
 When conducting a hypothesis test to examine the relationship between
 the estimated proportion of low-income jobs lost due to COVID-19 and the

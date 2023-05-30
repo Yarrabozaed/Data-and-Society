@@ -1,6 +1,13 @@
 ---
 title: "The Workforce in Crisis: Understanding the Link between State-Level COVID-19 Responses and Low-Income Employment"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    theme: united
+    highlight: pygments
 always_allow_html: true
 ---
 
@@ -244,7 +251,7 @@ In this graph, we wanted to highlight duration of vaccine availability. If the a
 #TODO
 ```
 
-### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_\(COVID-19\)_pandemic,_2020-2022)
+#### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_\(COVID-19\)_pandemic,_2020-2022)
 
 When conducting a hypothesis test to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the duration of masking requirements, the obtained p-value and correlation coefficient were 1.929*10^(-7) and 0.70 respectively. These results signify a strong, positive correlation between the estimated proportion of low-income jobs lost per state and the length of masking requirements. Therefore, states with lengthier masking requirements are expected to experience a higher proportion of job losses.
 
@@ -420,7 +427,7 @@ This graph shows the relationship between these two variables. We wanted to high
 #TODO
 ```
 
-#### PCA
+### PCA
 
 [**TODO**]
 
