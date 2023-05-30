@@ -37,7 +37,7 @@ Our objective is to assess the extent to which each discussed variable contribut
 
 ## Methods and Datasets
 
-### [Original Dataset: Low Income Jobs Lost to COVID-19]() 
+### [Original Dataset: Low Income Jobs Lost to COVID-19](https://datacatalog.urban.org/dataset/estimated-low-income-jobs-lost-covid-19) 
 
 Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US based on the residence of workers. Low income those with (<$40,000 salary). Within the dataset, it provides 20 names of the different work industries, and this allows us to compare the job loss index by state and by county across the country and see how they're different to each other. The numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area that consists of one or more counties) who lost their job. The main variables consisted in the dataset are the state names, Proportion of Jobs Loss Index to Low Income Jobs, Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss amongst each state in the U.S. 
 
