@@ -193,7 +193,7 @@ kableExtra::scroll_box(kbl1)
 
 #### Summary of Results 
 
-[**TODO**]
+According to the following table, the eight variables’ p-values fall under the alpha level of 0.05. In terms of relationship strength, majority of the variables have a moderate relationship with the proportion of low-income jobs lost per state, whether positive or negative. Length of masking requirement and the proportion of democratic voters in 2020 both have a strong positive correlation with low-income jobs lost. Rate of jobs that went remote has a positive, but weak relationship with low-income jobs lost.
 
 ```{r, echo=FALSE}
 my_tibble <- tibble::tribble(
