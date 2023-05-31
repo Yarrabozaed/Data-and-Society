@@ -40,7 +40,7 @@ The COVID-19 pandemic has had a lasting impact on the global economy, reshaping 
 
 This paper aims to examine the correlation between the COVID-19 response measures implemented by each state and their impact on the workforce, particularly low-income employees. The primary focus is on variables related to COVID-19 and the healthcare system within each state. Additionally, we consider other factors such as the state's political lean and economic indicators like average salary.
 
-Our objective is to assess the extent to which each discussed variable contributed to the fluctuation in low-income job numbers during the pandemic. To achieve this, we first outline the datasets used for our research. Subsequently, we present our statistical methods and the results obtained. Finally, we provide an analysis and interpretation of the data, offering insights into how this prediction can assist states in determining ideal response measures for their regions in future health crises.
+Our objective is to assess the extent to which each discussed variable contributed to the fluctuation in low-income job numbers during the pandemic. To achieve this, we first outline the datasets used for our research. Subsequently, we present our statistical methods and the results obtained. Finally, we provide an analysis and interpretation of the data.
 
 ## Methods and Datasets
 
@@ -666,3 +666,7 @@ ggplot(mapdata2) +
 ## Discussion
 
 [**TODO**]
+
+## GitHub Repository
+
+Click [here](https://github.com/Yarrabozaed/Data-and-Society) to view our GitHub repository and code!
