@@ -59,7 +59,7 @@ The variable "Gathering Restrictions (max length)" was derived from the gatherin
 
 ### [Average Salary per State](https://www.statista.com/statistics/243850/private-industry-wages-per-employee-in-the-us-by-state/)
 
-The data was collected by the Bureau of Labor Statistics, which was released in September 2022. It represents the average annual private industry mean wages per employee in the United States by state in 2011. It includes all fifty states’ average salary in 2011 in U.S. dollars. Additionally, average salary for District of Columbia and United States are included, which are not accounted for in the variable’s statistical analysis.  
+The data was collected by the Bureau of Labor Statistics, which was released in September 2022. It represents the average annual private industry mean wages per employee in the United States by state in 2021. It includes all fifty states’ average salary in 2021 in U.S. dollars. Additionally, average salary for District of Columbia and United States are included, which are not accounted for in the variable’s statistical analysis.  
 
 ### [Healthcare Rank](https://www.usnews.com/news/best-states/articles/methodology)
 
