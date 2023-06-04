@@ -270,31 +270,7 @@ The null hypothesis ($H_0$) for all the tests posits that there is no correlatio
 
 ### Principal Component Analysis
 
-Using the Principal Component Analysis, we were able to bring our seven interrelated variables down to fewer variables that still accounted for a lot of the variability with the explanatory variable. Using standardization, we were able to put all of the variables on even footing to ensure that no variable had more weight than another. Our goal with this was to create a more reasonable model that gave the data room to be unaffected by collinearity. By using the Principal Component Analysis, we were able to create a model that predicted low-income job loss based on two completely independent variables. In the end, we created a model that accounted for 91.8% of the variability in the explanatory variables. It is important that when trying to predict using this model to plug in standardized versions to ensure that all variables are properly accounted for.
-
-```{r, echo=FALSE}
-t1 <- tibble::tribble(
-                                               ~Variable, ~`Component 1`, ~`Component 2`,
-                                 "Health Care Rank 2021",   0.48236001,  0.217175965,
-            "Doses of the COVID-19 Vaccine Administered",   0.54576527,  0.005541377,
-                          "Proportion of Remote Workers",  0.430298218,  0.263151047,
-                            "Total Days of Mask Mandate",  0.197323354, -0.402118639,
-        "Annual Income Difference Between 2018 and 2021", -0.352365032,  0.509460804,
-  "Proportion of Democratic Voters in the 2020 Election",  0.385462209,  0.017017971,
-                                    "Gathering Size Ban",  0.007211243,  -0.67971766
-  )
-
-kbl1 <- kableExtra::kable(t1, "html") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
-  kable_classic() %>%
-  kable_paper() %>%
-  row_spec(0, bold = TRUE) %>%
-  row_spec(0, color = "white", background = "black")
-
-# Add scrollable container around the table
-kableExtra::scroll_box(kbl1)
-
-```
+Using the Principal Component Analysis, we were able to bring our seven interrelated variables down to fewer variables that still accounted for a lot of the variability with the explanatory variable. Using standardization, we were able to put all of the variables on even footing to ensure that no variable had more weight than another. Our goal with this was to create a more reasonable model that gave the data room to be unaffected by co-linearity. By using the Principal Component Analysis, we were able to create a model that predicted low-income job loss based on two completely independent variables. In the end, we created a model that accounted for 91.8% of the variability in the explanatory variables. It is important that when trying to predict using this model to plug in standardized versions to ensure that all variables are properly accounted for.
 
 ## Results
 
