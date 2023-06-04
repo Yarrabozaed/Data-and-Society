@@ -46,7 +46,110 @@ Our objective is to assess the extent to which each discussed variable contribut
 
 ### [Original Dataset: Low Income Jobs Lost to COVID-19](https://datacatalog.urban.org/dataset/estimated-low-income-jobs-lost-covid-19) 
 
-Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US based on the residence of workers. Low income those with (<$40,000 salary). Within the dataset, it provides 20 names of the different work industries, and this allows us to compare the job loss index by state and by county across the country and see how they're different to each other. The numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area that consists of one or more counties) who lost their job. The main variables consisted in the dataset are the state names, Proportion of Jobs Loss Index to Low Income Jobs, Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss amongst each state in the U.S.
+Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US based on the residence of workers. Low income those with (<$40,000 salary). Within the dataset, it provides 20 names of the different work industries, and this allows us to compare the job loss index by state and by county across the country and see how they're different to each other. The numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area that consists of one or more counties) who lost their job. The main variables consisted in the dataset are the state names, Proportion of Jobs Loss Index to Low Income Jobs, Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss among each state in the U.S.
+
+The graph below showcases the proportion of low-income jobs lost due to COVID-19 as estimated in our original dataset. The proportion is relative to the net jobs lost in all states. Hawaii and New York standout as the states with the highest low-income jobs lost. Idaho and Utah gained jobs, with negative proportions.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(tidyverse)
+library(openintro)
+library(readxl)
+library(plotly)
+library(readr)
+library(tibble)
+library(albersusa)
+
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())}
+
+us_states <- usa_sf()
+us_county <- counties_sf("laea")
+
+Labels <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/lehd_types_s3.csv")
+County <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/sum_job_loss_county.csv")
+Tract <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/job_loss_by_tract.csv")
+CBSA <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/sum_job_loss_cbsa.csv")
+
+Lab <- c("TotalJobLossIndex", "Agriculture", "Mining", "Utilities", "Construction", "Manufacturing", "Wholesale_Trade", "Retail_Trade", "Transportation_Warehousing", "Information", "Finance_Insurance", "RealEstate", "STEM", "CorpManagement", "WasteManagement", "Education", "Health_SocialAssistance", "Arts", "Accommodations_FoodService", "OtherServices", "PublicAdmin")
+
+LabChange <- County[,-1:-3]
+LabChange <- LabChange[,-22:-25]
+LabChange <- setNames(LabChange, Lab)
+NoChangeFirst <- County[,-4:-28]
+NoChangeLast <- County[, -1:-24]
+County <- cbind(NoChangeFirst, LabChange, NoChangeLast)
+
+LabChange <- CBSA[,-1:-2]
+LabChange <- LabChange[,-22:-25]
+LabChange <- setNames(LabChange, Lab)
+NoChangeFirst <- CBSA[,-3:-27]
+NoChangeLast <- CBSA[, -1:-23]
+CBSA <- cbind(NoChangeFirst, LabChange, NoChangeLast)
+
+Lab <- c("Agriculture", "Mining", "Utilities", "Construction", "Manufacturing", "Wholesale_Trade", "Retail_Trade", "Transportation_Warehousing", "Information", "Finance_Insurance", "RealEstate", "STEM", "CorpManagement", "WasteManagement", "Education", "Health_SocialAssistance", "Arts", "Accommodations_FoodService", "OtherServices", "PublicAdmin", "TotalJobLossIndex")
+
+LabChange <- Tract[,-1:-7]
+LabChange <- LabChange[,-22:-23]
+LabChange <- setNames(LabChange, Lab)
+NoChangeFirst <- Tract[,-8:-30]
+NoChangeLast <- Tract[, -1:-28]
+Tract <- cbind(NoChangeFirst, LabChange, NoChangeLast)
+
+CountryByState <- County %>%
+  select(state_name, TotalJobLossIndex, total_li_workers_employed, Agriculture, Mining, Utilities, Construction, Manufacturing, Wholesale_Trade, Retail_Trade, Transportation_Warehousing, Information, Finance_Insurance, RealEstate, STEM, CorpManagement, WasteManagement, Education, Health_SocialAssistance, Arts, Accommodations_FoodService, OtherServices, PublicAdmin)%>%
+  group_by(state_name) %>%
+    summarize(
+      ProportionOfJobLossIndexToLowIncomeJobs = sum(TotalJobLossIndex) / sum(total_li_workers_employed),
+      TotalJobLossIndex = sum(TotalJobLossIndex),
+      total_li_workers_employed = sum(total_li_workers_employed),
+      Agriculture = sum(Agriculture),
+      Mining = sum(Mining),
+      Utilities = sum(Utilities),
+      Construction = sum(Construction),
+      Manufacturing = sum(Manufacturing),
+      Wholesale_Trade = sum(Wholesale_Trade),
+      Retail_Trade = sum(Retail_Trade),
+      Transportation_Warehousing = sum(Transportation_Warehousing),
+      Information = sum(Information),
+      Finance_Insurance = sum(Finance_Insurance),
+      RealEstate = sum(RealEstate),
+      STEM = sum(STEM),
+      CorpManagement = sum(CorpManagement),
+      WasteManagement = sum(WasteManagement),
+      Education = sum(Education),
+      Health_SocialAssistance = sum(Health_SocialAssistance),
+      Arts = sum(Arts),
+      Accommodations_FoodService = sum(Accommodations_FoodService),
+      OtherServices = sum(OtherServices),
+      PublicAdmin = sum(PublicAdmin)
+  )
+
+us_states <- usa_sf("laea")
+
+my_cutpoints <- c(-0.1 ,0 ,0.05 , 0.1 , 0.15, 0.2)
+my_labels <- c("<0", "0 - 0.05", "0.05 - 0.1", "0.1 - 0.15" , "0.15<")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, CountryByState, by = c("name" = "state_name")) %>% 
+  mutate(mar = cut(ProportionOfJobLossIndexToLowIncomeJobs, breaks = my_cutpoints, labels = my_labels))
+
+#add colors
+my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
+                        "white","#c7e9b4")
+#initial map
+ggplot(mapdata1) +
+  geom_sf(aes(fill= mar), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("Proportion", values = my_colors) +
+  labs(title="Proportion of Low Income Jobs Lost Due To COVID-19") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+
+```
 
 ### [Rate of Vaccination](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total) 
 
