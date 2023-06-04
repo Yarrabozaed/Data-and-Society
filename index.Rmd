@@ -199,7 +199,7 @@ kableExtra::scroll_box(kbl1)
 
 #### Summary of Results 
 
-[**TODO**]
+According to the following table, the eight variables’ p-values fall under the alpha level of 0.05. In terms of relationship strength, majority of the variables have a moderate relationship with the proportion of low-income jobs lost per state, whether positive or negative. Length of masking requirement and the proportion of democratic voters in 2020 both have a strong positive correlation with low-income jobs lost. Rate of jobs that went remote has a positive, but weak relationship with low-income jobs lost.
 
 ```{r, echo=FALSE}
 my_tibble <- tibble::tribble(
@@ -210,7 +210,7 @@ my_tibble <- tibble::tribble(
       "Gathering Restrictions (Max Length)",     "0.0009606​​",                       "0.45​​", "Moderate & Positive (Length of Gathering Restrictions ↑, PLIJs Lost ↑)​​",
        "​Average Salary (per state, 2021)​",       "0.00113​​",                       "​0.45​",                   "​Moderate & Positive (Average Salary ↑, PLIJs Lost ↑)​",
                  "Healthcare Rank (2021)​​",      "0.001125​​",                      "-0.5​0​",                  "Moderate & Negative (Healthcare rank ↑, PLIJs Lost ↓)​​",
-  "Proportion of Democratic Voters (2020)​",   "1.909 × 10-6​",                         "0.61",         "Strong & Positive (Prop. of Democratic voters ↑, PLIJs Lost ↑) ​",
+  "Proportion of Democratic Voters (2020)​",   "2.97 × 10-8​",                         "0.68",         "Strong & Positive (Prop. of Democratic voters ↑, PLIJs Lost ↑) ​",
           "​Rate of Jobs that went Remote​",      "​ 0.04745​",                       "​0.29​",       "​Weak & Positive (Rate of Jobs that went Remote ↑, PLIJs Lost ↑) ​"
   )
 
@@ -657,15 +657,78 @@ ggplot(mapdata2) +
 
 ### PCA
 
-[**TODO**]
+By standardizing each variable then plugging them into each component, we can then use 	the equation below to predict the proportion of low-income jobs that should have been 	lost to the COVID-19 pandemic. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-#[TODO]
-```
+LowIncomeJobsLost $= 0.049508 + 0.009850 × Component1 + 0.007802 × Component2 + ε$ We can use this model to say that states that had higher proportion of democratic voters 	and more COVID-19 restrictions had more low-income jobs lost due to COVID-19.
 
 ## Discussion
 
-[**TODO**]
+According to our findings, we were able to find that democratic states with numerous COVID-19 restrictions caused higher numbers of predicted low-income jobs lost due to COVID-19. As seen from our model explaining each component of the principal component analysis, we can find a state with a better healthcare ranking, higher doses of the COVID-19 vaccine administered, a higher proportion of workers moving to remote workers, and a higher proportion of democratic voters causes our first component to be higher. This is as opposed to having higher income by state bring down our value for component one. This makes sense because based on our findings, states with a higher proportion of Democratic voters tended to have higher healthcare rankings. We also found having a higher proportion of Democratic voters caused more COVID-19 restrictions. When considering that, it makes sense that those values are all positive in component one. When looking at the annual income for 2021, we find that it is not highly correlated with any variable. Because of this, we came to believe that annual income from 2021 was used as a gap between component one and component two.
+
+We now see that only a higher average annual income in 2021 will heavily increase component two. We then also see that the total days of mask mandates and banned gathering sizes have a higher pull in the negative direction and help to compensate for over predictions in the first component. This makes a lot of sense that the second component would be comprised mostly to pull the proportions into reasonable ranges.  Noting that the highest proportion of low-income jobs lost to COVID-19 was about 17.6% in our model, it makes sense that our variables would be low, and we would want our model to predict low numbers.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+my_tibble_PCA <- tibble::tribble(
+                                               ~Variable, ~`Component 1`, ~`Component 2`,
+                                 "Health Care Rank 2021",    0.5062862,   0.15467635,
+            "Doses of the COVID-19 Vaccine Administered",   0.54527833,  -0.06696825,
+                          "Proportion of Remote Workers",   0.45113703,   0.21801794,
+                            "Total Days of Mask Mandate",   0.04482315,  -0.40083484,
+                                    "Annual Income 2021",   -0.2988173,   0.55074145,
+  "Proportion of Democratic Voters in the 2020 Election",   0.38128874,  -0.02809592,
+                                    "Gathering Size Ban",  -0.07835304,  -0.67770537
+  )
+
+my_table_PCA <- kableExtra::kable(my_tibble_PCA, "html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+  kable_classic() %>%
+  kable_paper() %>%
+  row_spec(0, bold = TRUE) %>%
+  row_spec(0, color = "white", background = "black")
+
+# Add scrollable container around the table
+kableExtra::scroll_box(my_table_PCA)
+
+```
+
+Finally, we can see that by un-standardizing the variables and plugging each variable through the component, we can find ways to predict the proportion of low-income jobs lost due to COVID-19 based on each individual variable. We can see from the following equation what each variable would bring to each predictor and what the new intercept is.
+
+
+Intercept &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.00446929$
+
+Health Care Ranking Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00000275842$
+
+Doses of Vaccine Administered Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00007061625$ 
+
+Proportion of Remote Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.005828656$
+
+Total Days of Mask Mandate Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00000001499702$
+
+Annual Income Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.000001608766$
+
+Proportion of Democratic Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.00002440761$
+
+Gathering Size Ban &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.000002022761$
+
+While this model is less interpretable, this is great for using for predictions. Using these coefficients, we can get accurate predictions based on each variable’s value. This is as opposed to the following model that gives a great idea of how each variable affects the model but is not as good at predicting.
+
+Standardized Intercept &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.049508$ 
+
+Standardized Health Care Ranking Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00646018546107$
+
+Standardized Doses of Vaccine Administered Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00540624078874$
+
+Standardized Proportion of Remote Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.006312696880526$ 
+
+Standardized Total Days of Mask Mandate Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.001245683021122$ 
+
+Standardized Annual Income Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.000572238398216$ 
+
+Standardized Proportion of Democratic Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.003922719458163$ 
+
+Standardized Gathering Size Ban &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.005312498982239$ 
+
+While both models are useful, it is good to see how each variable affects the model and allows us to see that the standardized annual income coefficient has the least impact on the model when standardized and helps to see that the balance between component one and component two minimizes annual income while allowing for corrective elements to come in like gathering size ban and total days of mask mandate.
 
 ## GitHub Repository
 

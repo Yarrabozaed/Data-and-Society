@@ -2247,7 +2247,14 @@ Gathering Size Ban
 <h3>Hypothesis Testing</h3>
 <div id="summary-of-results" class="section level4">
 <h4>Summary of Results</h4>
-<p>[<strong>TODO</strong>]</p>
+<p>According to the following table, the eight variables’ p-values fall
+under the alpha level of 0.05. In terms of relationship strength,
+majority of the variables have a moderate relationship with the
+proportion of low-income jobs lost per state, whether positive or
+negative. Length of masking requirement and the proportion of democratic
+voters in 2020 both have a strong positive correlation with low-income
+jobs lost. Rate of jobs that went remote has a positive, but weak
+relationship with low-income jobs lost.</p>
 <div style="border: 1px solid #ddd; padding: 5px; ">
 <table class="table table-striped table-hover lightable-classic lightable-paper" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
@@ -2358,10 +2365,10 @@ Moderate &amp; Negative (Healthcare rank ↑, PLIJs Lost ↓)​​
 Proportion of Democratic Voters (2020)​
 </td>
 <td style="text-align:left;">
-1.909 × 10-6​
+2.97 × 10-8​
 </td>
 <td style="text-align:left;">
-0.61
+0.68
 </td>
 <td style="text-align:left;">
 Strong &amp; Positive (Prop. of Democratic voters ↑, PLIJs Lost ↑) ​
@@ -2564,12 +2571,183 @@ physical presence.</p>
 </div>
 <div id="pca" class="section level3">
 <h3>PCA</h3>
-<p>[<strong>TODO</strong>]</p>
+<p>By standardizing each variable then plugging them into each
+component, we can then use the equation below to predict the proportion
+of low-income jobs that should have been lost to the COVID-19
+pandemic.</p>
+<p>LowIncomeJobsLost <span class="math inline">\(= 0.049508 + 0.009850 ×
+Component1 + 0.007802 × Component2 + ε\)</span> We can use this model to
+say that states that had higher proportion of democratic voters and more
+COVID-19 restrictions had more low-income jobs lost due to COVID-19.</p>
 </div>
 </div>
 <div id="discussion" class="section level2">
 <h2>Discussion</h2>
-<p>[<strong>TODO</strong>]</p>
+<p>According to our findings, we were able to find that democratic
+states with numerous COVID-19 restrictions caused higher numbers of
+predicted low-income jobs lost due to COVID-19. As seen from our model
+explaining each component of the principal component analysis, we can
+find a state with a better healthcare ranking, higher doses of the
+COVID-19 vaccine administered, a higher proportion of workers moving to
+remote workers, and a higher proportion of democratic voters causes our
+first component to be higher. This is as opposed to having higher income
+by state bring down our value for component one. This makes sense
+because based on our findings, states with a higher proportion of
+Democratic voters tended to have higher healthcare rankings. We also
+found having a higher proportion of Democratic voters caused more
+COVID-19 restrictions. When considering that, it makes sense that those
+values are all positive in component one. When looking at the annual
+income for 2021, we find that it is not highly correlated with any
+variable. Because of this, we came to believe that annual income from
+2021 was used as a gap between component one and component two.</p>
+<p>We now see that only a higher average annual income in 2021 will
+heavily increase component two. We then also see that the total days of
+mask mandates and banned gathering sizes have a higher pull in the
+negative direction and help to compensate for over predictions in the
+first component. This makes a lot of sense that the second component
+would be comprised mostly to pull the proportions into reasonable
+ranges. Noting that the highest proportion of low-income jobs lost to
+COVID-19 was about 17.6% in our model, it makes sense that our variables
+would be low, and we would want our model to predict low numbers.</p>
+<div style="border: 1px solid #ddd; padding: 5px; ">
+<table class="table table-striped table-hover lightable-classic lightable-paper" style="width: auto !important; margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: black !important;">
+Variable
+</th>
+<th style="text-align:right;font-weight: bold;color: white !important;background-color: black !important;">
+Component 1
+</th>
+<th style="text-align:right;font-weight: bold;color: white !important;background-color: black !important;">
+Component 2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Health Care Rank 2021
+</td>
+<td style="text-align:right;">
+0.5062862
+</td>
+<td style="text-align:right;">
+0.1546764
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Doses of the COVID-19 Vaccine Administered
+</td>
+<td style="text-align:right;">
+0.5452783
+</td>
+<td style="text-align:right;">
+-0.0669683
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proportion of Remote Workers
+</td>
+<td style="text-align:right;">
+0.4511370
+</td>
+<td style="text-align:right;">
+0.2180179
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Days of Mask Mandate
+</td>
+<td style="text-align:right;">
+0.0448232
+</td>
+<td style="text-align:right;">
+-0.4008348
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Annual Income 2021
+</td>
+<td style="text-align:right;">
+-0.2988173
+</td>
+<td style="text-align:right;">
+0.5507414
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Proportion of Democratic Voters in the 2020 Election
+</td>
+<td style="text-align:right;">
+0.3812887
+</td>
+<td style="text-align:right;">
+-0.0280959
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gathering Size Ban
+</td>
+<td style="text-align:right;">
+-0.0783530
+</td>
+<td style="text-align:right;">
+-0.6777054
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Finally, we can see that by un-standardizing the variables and
+plugging each variable through the component, we can find ways to
+predict the proportion of low-income jobs lost due to COVID-19 based on
+each individual variable. We can see from the following equation what
+each variable would bring to each predictor and what the new intercept
+is.</p>
+<p>Intercept                  <span class="math inline">\(=
+-0.00446929\)</span></p>
+<p>Health Care Ranking Coefficient                  <span class="math inline">\(= 0.00000275842\)</span></p>
+<p>Doses of Vaccine Administered Coefficient                  <span class="math inline">\(= 0.00007061625\)</span></p>
+<p>Proportion of Remote Workers Coefficient                  <span class="math inline">\(= 0.005828656\)</span></p>
+<p>Total Days of Mask Mandate Coefficient                  <span class="math inline">\(= 0.00000001499702\)</span></p>
+<p>Annual Income Coefficient                  <span class="math inline">\(= -0.000001608766\)</span></p>
+<p>Proportion of Democratic Workers Coefficient                  <span class="math inline">\(= -0.00002440761\)</span></p>
+<p>Gathering Size Ban                  <span class="math inline">\(=
+-0.000002022761\)</span></p>
+<p>While this model is less interpretable, this is great for using for
+predictions. Using these coefficients, we can get accurate predictions
+based on each variable’s value. This is as opposed to the following
+model that gives a great idea of how each variable affects the model but
+is not as good at predicting.</p>
+<p>Standardized Intercept                  <span class="math inline">\(=
+0.049508\)</span></p>
+<p>Standardized Health Care Ranking Coefficient                  <span class="math inline">\(= 0.00646018546107\)</span></p>
+<p>Standardized Doses of Vaccine Administered Coefficient
+                 <span class="math inline">\(=
+0.00540624078874\)</span></p>
+<p>Standardized Proportion of Remote Workers Coefficient
+                 <span class="math inline">\(=
+0.006312696880526\)</span></p>
+<p>Standardized Total Days of Mask Mandate Coefficient                 
+<span class="math inline">\(= -0.001245683021122\)</span></p>
+<p>Standardized Annual Income Coefficient                  <span class="math inline">\(= 0.000572238398216\)</span></p>
+<p>Standardized Proportion of Democratic Workers Coefficient
+                 <span class="math inline">\(=
+0.003922719458163\)</span></p>
+<p>Standardized Gathering Size Ban                  <span class="math inline">\(= -0.005312498982239\)</span></p>
+<p>While both models are useful, it is good to see how each variable
+affects the model and allows us to see that the standardized annual
+income coefficient has the least impact on the model when standardized
+and helps to see that the balance between component one and component
+two minimizes annual income while allowing for corrective elements to
+come in like gathering size ban and total days of mask mandate.</p>
 </div>
 <div id="github-repository" class="section level2">
 <h2>GitHub Repository</h2>

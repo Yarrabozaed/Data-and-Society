@@ -578,12 +578,42 @@ ggplot(mapdata2) +
 
 #### PCA
 
-[**TODO**]
+By standardizing each variable then plugging them into each component, we can then use 	the equation below to predict the proportion of low-income jobs that should have been 	lost to the COVID-19 pandemic. 
+
+LowIncomeJobsLost $= 0.049508 + 0.009850 × Component1 + 0.007802 × Component2 + ε$ We can use this model to say that states that had higher proportion of democratic voters 	and more COVID-19 restrictions had more low-income jobs lost due to COVID-19.
 
 ## Discussion
 
-[**TODO**]
+According to our findings, we were able to find that democratic states with numerous COVID-19 restrictions caused higher numbers of predicted low-income jobs lost due to COVID-19. As seen from our model explaining each component of the principal component analysis, we can find a state with a better healthcare ranking, higher doses of the COVID-19 vaccine administered, a higher proportion of workers moving to remote workers, and a higher proportion of democratic voters causes our first component to be higher. This is as opposed to having higher income by state bring down our value for component one. This makes sense because based on our findings, states with a higher proportion of Democratic voters tended to have higher healthcare rankings. We also found having a higher proportion of Democratic voters caused more COVID-19 restrictions. When considering that, it makes sense that those values are all positive in component one. When looking at the annual income for 2021, we find that it is not highly correlated with any variable. Because of this, we came to believe that annual income from 2021 was used as a gap between component one and component two.
 
+We now see that only a higher average annual income in 2021 will heavily increase component two. We then also see that the total days of mask mandates and banned gathering sizes have a higher pull in the negative direction and help to compensate for over predictions in the first component. This makes a lot of sense that the second component would be comprised mostly to pull the proportions into reasonable ranges. Noting that the highest proportion of low-income jobs lost to COVID-19 was about 17.6% in our model, it makes sense that our variables would be low, and we would want our model to predict low numbers.
+
+
+
+Finally, we can see that by un-standardizing the variables and plugging each variable through the component, we can find ways to predict the proportion of low-income jobs lost due to COVID-19 based on each individual variable. We can see from the following equation what each variable would bring to each predictor and what the new intercept is.
+
+
+Intercept							= -0.00446929  
+Health Care Ranking Coefficient				= 0.00000275842  
+Doses of Vaccine Administered Coefficient			= 0.00007061625 
+Proportion of Remote Workers Coefficient			= 0.005828656 
+Total Days of Mask Mandate Coefficient			= 0.00000001499702 
+Annual Income Coefficient					= -0.000001608766 
+Proportion of Democratic Workers Coefficient		= -0.00002440761 
+Gathering Size Ban						= -0.000002022761 
+
+While this model is less interpretable, this is great for using for predictions. Using these coefficients, we can get accurate predictions based on each variable’s value. This is as opposed to the following model that gives a great idea of how each variable affects the model but is not as good at predicting.
+
+Standardized Intercept						= 0.049508 
+Standardized Health Care Ranking Coefficient			= 0.00646018546107 
+Standardized Doses of Vaccine Administered Coefficient		= 0.00540624078874 
+Standardized Proportion of Remote Workers Coefficient		= 0.006312696880526 
+Standardized Total Days of Mask Mandate Coefficient		= -0.001245683021122 
+Standardized Annual Income Coefficient				= 0.000572238398216 
+Standardized Proportion of Democratic Workers Coefficient	= 0.003922719458163 
+Standardized Gathering Size Ban					= -0.005312498982239 
+
+While both models are useful, it is good to see how each variable affects the model and allows us to see that the standardized annual income coefficient has the least impact on the model when standardized and helps to see that the balance between component one and component two minimizes annual income while allowing for corrective elements to come in like gathering size ban and total days of mask mandate.
 
 <!--
 ## Including Code
