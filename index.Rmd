@@ -32,7 +32,9 @@ This report was written by Yarra Abozaed, Janelle Acob, Zach Johansen, and Tim C
 
 ## Abstract
 
-The COVID-19 pandemic has disproportionately impacted low-income individuals, resulting in significant job losses within this population. This abstract examines the specific challenges faced by low-income workers and explores the consequences of their job loss during the pandemic. Drawing upon available research and data, it highlights the economic, social, and psychological ramifications of this phenomenon and underscores the urgent need for targeted interventions to support and uplift this vulnerable group in the post-pandemic recovery efforts. We decided to do a mathematical measure of how different states respond to the covid pandemic and how does that affect the workforce on a state level and the impact it had on the workforce in said state while looking at external datasets to help us create a metric in correlation to this loss & continue to seek explanations to the relationship we find. By shedding light on the unique experiences and hardships faced by low-income individuals affected by job loss, this abstract aims to inform policymakers and organizations about the importance of addressing equity and inclusivity in employment strategies. 
+The COVID-19 pandemic has disproportionately impacted low-income individuals, resulting in significant job losses around the world. This paper examines the relationship between the responses to the pandemic in the United States and the impact of such responses on the low-income job market. We examine a set of relevant variables that are correlated to the loss of low-income jobs and use such variables to create a predictive model using principal component analysis.
+
+By shedding light on the unique experiences and hardships faced by low-income individuals affected by job loss, this abstract aims to inform policymakers and organizations about the importance of addressing equity and inclusivity in employment strategies. 
 
 ## Introduction
 
