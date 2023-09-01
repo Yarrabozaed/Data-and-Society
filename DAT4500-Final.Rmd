@@ -1,6 +1,13 @@
 ---
 title: "The Workforce in Crisis: Understanding the Link between State-Level COVID-19 Responses and Low-Income Employment"
-output: github_document
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    theme: united
+    highlight: pygments
 always_allow_html: true
 ---
 
@@ -25,7 +32,7 @@ This report was written by Yarra Abozaed, Janelle Acob, Zach Johansen, and Tim C
 
 ## Abstract
 
-The COVID-19 pandemic has disproportionately impacted low-income individuals, resulting in significant job losses within this population. This abstract examines the specific challenges faced by low-income workers and explores the consequences of their job loss during the pandemic. Drawing upon available research and data, it highlights the economic, social, and psychological ramifications of this phenomenon and underscores the urgent need for targeted interventions to support and uplift this vulnerable group in the post-pandemic recovery efforts. We decided to do a mathematical measure of how different states respond to the covid pandemic and how does that affect the workforce on a state level and the impact it had on the workforce in said state while looking at external datasets to help us create a metric in correlation to this loss & continue to seek explanations to the relationship we find. By shedding light on the unique experiences and hardships faced by low-income individuals affected by job loss, this abstract aims to inform policymakers and organizations about the importance of addressing equity and inclusivity in employment strategies. 
+The COVID-19 pandemic has disproportionately impacted low-income individuals, resulting in significant job losses around the world. This paper examines the relationship between the responses to the pandemic in the United States and the impact of such responses on the low-income job market. We examine a set of relevant variables that are correlated to the loss of low-income jobs and use said variables to create a predictive model using principal component analysis.
 
 ## Introduction
 
@@ -33,25 +40,128 @@ The COVID-19 pandemic has had a lasting impact on the global economy, reshaping 
 
 This paper aims to examine the correlation between the COVID-19 response measures implemented by each state and their impact on the workforce, particularly low-income employees. The primary focus is on variables related to COVID-19 and the healthcare system within each state. Additionally, we consider other factors such as the state's political lean and economic indicators like average salary.
 
-Our objective is to assess the extent to which each discussed variable contributed to the fluctuation in low-income job numbers during the pandemic. To achieve this, we first outline the datasets used for our research. Subsequently, we present our statistical methods and the results obtained. Finally, we provide an analysis and interpretation of the data, offering insights into how this prediction can assist states in determining ideal response measures for their regions in future health crises.
+Our objective is to assess the extent to which each discussed variable contributed to the fluctuation in low-income job numbers during the pandemic. To achieve this, we first outline the datasets used for our research. Subsequently, we present our statistical methods and the results obtained. Finally, we provide an analysis and interpretation of the data.
 
 ## Methods and Datasets
 
 ### [Original Dataset: Low Income Jobs Lost to COVID-19](https://datacatalog.urban.org/dataset/estimated-low-income-jobs-lost-covid-19) 
 
-Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost because of COVID-19 by industry for every census tract in the US based on the residence of workers. Low income those with (<$40,000 salary). Within the dataset, it provides 20 names of the different work industries, and this allows us to compare the job loss index by state and by county across the country and see how they're different to each other. The numbers represent the count workers who live in which state, county, and the CBSA (Core-based statistical area: which is the geographic area that consists of one or more counties) who lost their job. The main variables consisted in the dataset are the state names, Proportion of Jobs Loss Index to Low Income Jobs, Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss amongst each state in the U.S. 
+Our main dataset consists of the Estimated Low-Income Jobs Lost to COVID-19. The Urban Institute data science team used data from the US Bureau of Labor Statistics, IPUMS 2012-2018 ACS microdata, and Urban’s 2018 Census LODES data, in order to estimate the number of low-income jobs lost as a direct result of COVID-19 by industry for every census tract in the US. The dataset provides 20 names of the different work industries, allowing for a comparison of the job loss index by state and by county across the country. The primary variables in the dataset are the state names, the Proportion of Jobs Loss Index to Low-Income Jobs, the Total Job Loss Index, and the Total of Low-Income Workers Employed. This graph represents the proportion of low-income job loss in each state in the U.S.
+
+The graph below showcases the proportion of low-income jobs lost due to COVID-19, as estimated in our original dataset. The proportion is relative to the net jobs lost in all states. Hawaii and New York stand out as the states with the highest low-income jobs lost. Idaho and Utah gained jobs, with negative proportions.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(tidyverse)
+library(openintro)
+library(readxl)
+library(plotly)
+library(readr)
+library(tibble)
+library(albersusa)
+
+my_map_theme <- function(){
+  theme(panel.background=element_blank(),
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank())}
+
+us_states <- usa_sf()
+us_county <- counties_sf("laea")
+
+Labels <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/lehd_types_s3.csv")
+County <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/sum_job_loss_county.csv")
+Tract <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/job_loss_by_tract.csv")
+CBSA <- read_csv("https://ui-lodes-job-change-public.s3.amazonaws.com/sum_job_loss_cbsa.csv")
+
+Lab <- c("TotalJobLossIndex", "Agriculture", "Mining", "Utilities", "Construction", "Manufacturing", "Wholesale_Trade", "Retail_Trade", "Transportation_Warehousing", "Information", "Finance_Insurance", "RealEstate", "STEM", "CorpManagement", "WasteManagement", "Education", "Health_SocialAssistance", "Arts", "Accommodations_FoodService", "OtherServices", "PublicAdmin")
+
+LabChange <- County[,-1:-3]
+LabChange <- LabChange[,-22:-25]
+LabChange <- setNames(LabChange, Lab)
+NoChangeFirst <- County[,-4:-28]
+NoChangeLast <- County[, -1:-24]
+County <- cbind(NoChangeFirst, LabChange, NoChangeLast)
+
+LabChange <- CBSA[,-1:-2]
+LabChange <- LabChange[,-22:-25]
+LabChange <- setNames(LabChange, Lab)
+NoChangeFirst <- CBSA[,-3:-27]
+NoChangeLast <- CBSA[, -1:-23]
+CBSA <- cbind(NoChangeFirst, LabChange, NoChangeLast)
+
+Lab <- c("Agriculture", "Mining", "Utilities", "Construction", "Manufacturing", "Wholesale_Trade", "Retail_Trade", "Transportation_Warehousing", "Information", "Finance_Insurance", "RealEstate", "STEM", "CorpManagement", "WasteManagement", "Education", "Health_SocialAssistance", "Arts", "Accommodations_FoodService", "OtherServices", "PublicAdmin", "TotalJobLossIndex")
+
+LabChange <- Tract[,-1:-7]
+LabChange <- LabChange[,-22:-23]
+LabChange <- setNames(LabChange, Lab)
+NoChangeFirst <- Tract[,-8:-30]
+NoChangeLast <- Tract[, -1:-28]
+Tract <- cbind(NoChangeFirst, LabChange, NoChangeLast)
+
+CountryByState <- County %>%
+  select(state_name, TotalJobLossIndex, total_li_workers_employed, Agriculture, Mining, Utilities, Construction, Manufacturing, Wholesale_Trade, Retail_Trade, Transportation_Warehousing, Information, Finance_Insurance, RealEstate, STEM, CorpManagement, WasteManagement, Education, Health_SocialAssistance, Arts, Accommodations_FoodService, OtherServices, PublicAdmin)%>%
+  group_by(state_name) %>%
+    summarize(
+      ProportionOfJobLossIndexToLowIncomeJobs = sum(TotalJobLossIndex) / sum(total_li_workers_employed),
+      TotalJobLossIndex = sum(TotalJobLossIndex),
+      total_li_workers_employed = sum(total_li_workers_employed),
+      Agriculture = sum(Agriculture),
+      Mining = sum(Mining),
+      Utilities = sum(Utilities),
+      Construction = sum(Construction),
+      Manufacturing = sum(Manufacturing),
+      Wholesale_Trade = sum(Wholesale_Trade),
+      Retail_Trade = sum(Retail_Trade),
+      Transportation_Warehousing = sum(Transportation_Warehousing),
+      Information = sum(Information),
+      Finance_Insurance = sum(Finance_Insurance),
+      RealEstate = sum(RealEstate),
+      STEM = sum(STEM),
+      CorpManagement = sum(CorpManagement),
+      WasteManagement = sum(WasteManagement),
+      Education = sum(Education),
+      Health_SocialAssistance = sum(Health_SocialAssistance),
+      Arts = sum(Arts),
+      Accommodations_FoodService = sum(Accommodations_FoodService),
+      OtherServices = sum(OtherServices),
+      PublicAdmin = sum(PublicAdmin)
+  )
+
+us_states <- usa_sf("laea")
+
+my_cutpoints <- c(-0.1 ,0 ,0.05 , 0.1 , 0.15, 0.2)
+my_labels <- c("<0", "0 - 0.05", "0.05 - 0.1", "0.1 - 0.15" , "0.15<")
+
+#join us_states data with covid-19 vaccination data
+mapdata1 <- left_join(us_states, CountryByState, by = c("name" = "state_name")) %>% 
+  mutate(mar = cut(ProportionOfJobLossIndexToLowIncomeJobs, breaks = my_cutpoints, labels = my_labels))
+
+#add colors
+my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
+                        "white","#c7e9b4")
+#initial map
+ggplot(mapdata1) +
+  geom_sf(aes(fill= mar), color = "black") +
+  my_map_theme() +
+  scale_fill_manual("Proportion", values = my_colors) +
+  labs(title="Proportion of Low Income Jobs Lost Due To COVID-19") +
+  theme(legend.position = "top", legend.direction = "horizontal")
+
+```
 
 ### [Rate of Vaccination](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total) 
 
-This data was collected by the CDC in which it highlights the covid-19 vaccinations distribution per state. It includes the number of people receiving at least one dose, the number of people who are fully vaccinated, and the number of people with an updated (bivalent) booster dose based on information reported to CDC on dose number, dose manufacturer, administration date, recipient ID, and date of submission. This dataset was last updated on May 10th, 2023. CDC estimates are based on data that include a dose number (first, second, or booster). To protect the privacy of vaccine recipients, CDC receives data without any personally identifiable information (deidentified data). Each jurisdiction or provider uses a unique person identifier to link records within their own systems. 
+This data was collected by the CDC, which highlights the COVID-19 vaccination distribution per state. It includes the number of people receiving at least one dose, the number of people who are fully vaccinated, and the number of people with an updated (bivalent) booster dose based on information reported to the CDC on dose number, dose manufacturer, administration date, recipient ID, and date of submission. This dataset was last updated on May 10, 2023. CDC estimates are based on data that include a dose number (first, second, or booster). To protect the privacy of vaccine recipients, the CDC receives data without any personally identifiable information (deidentified data). Each jurisdiction or provider uses a unique person identifier to link records within their own systems. 
 
 ### [Length of Vaccine Availability](https://covid.cdc.gov/covid-data-tracker/#vaccinations_vacc-total-admin-count-total)
 
-This data was collected by the CDC in which it highlights the covid-19 vaccinations distribution per state. It includes the number of people receiving at least one dose, the number of people who are fully vaccinated, and the number of people with an updated (bivalent) booster dose based on information reported to CDC on dose number, dose manufacturer, administration date, recipient ID, and date of submission. This dataset was last updated on May 10th, 2023. 
+This data was collected by the CDC, which highlights the COVID-19 vaccination distribution per state. It includes the number of people receiving at least one dose, the number of people who are fully vaccinated, and the number of people with an updated (bivalent) booster dose based on information reported to the CDC on dose number, dose manufacturer, administration date, recipient ID, and date of submission. This dataset was last updated on May 10, 2023. 
 
 ### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_\(COVID-19\)_pandemic,_2020-2022)
 
-This dataset highlights the duration (in days) of masking requirements per state in response to the COVID-19 pandemic. The data was obtained from the Ballotpedia website, where researchers gathered information from each state's local website. The dataset was last updated on April 30th, 2022. It includes the start date, end date, and the type of order that terminated the state requirement. The termination reasons encompass executive orders, court orders, and legislative actions. Throughout the pandemic, some states adjusted their masking requirements or had temporary pauses, which are also indicated in the dataset. 
+This dataset highlights the duration (in days) of masking requirements per state in response to the COVID-19 pandemic. The data was obtained from the Ballotpedia website, where researchers gathered information from each state's local website. The dataset was last updated on April 30, 2022. It includes the start date, end date, and the type of order that terminated the state requirement. The termination reasons encompass executive orders, court orders, and legislative actions. Throughout the pandemic, some states adjusted their masking requirements or had temporary pauses, which are also indicated in the dataset. 
 
 ### [Gathering Restrictions (Max Length)](https://healthdata.gov/dataset/U-S-State-and-Territorial-Gathering-Bans-March-11-/8tfm-md2h/data?no_mobile=true%E2%80%8B)
 
@@ -59,15 +169,15 @@ The variable "Gathering Restrictions (max length)" was derived from the gatherin
 
 ### [Average Salary per State](https://www.statista.com/statistics/243850/private-industry-wages-per-employee-in-the-us-by-state/)
 
-The data was collected by the Bureau of Labor Statistics, which was released in September 2022. It represents the average annual private industry mean wages per employee in the United States by state in 2021. It includes all fifty states’ average salary in 2021 in U.S. dollars. Additionally, average salary for District of Columbia and United States are included, which are not accounted for in the variable’s statistical analysis.  
+The data was collected by the Bureau of Labor Statistics, which was released in September 2022. It represents the average annual private industry mean wages per employee in the United States by state in 2021. It includes all fifty states’ average salary in 2011 in U.S. dollars. Additionally, the average salary for the District of Columbia and the United States (measured on the country level) are included, which are not accounted for in the variable’s statistical analysis.  
 
 ### [Healthcare Rank](https://www.usnews.com/news/best-states/articles/methodology)
 
-The data for the health rankings of each state was obtained from the U.S. News 2021 rankings. This dataset provides a ranking from 1 to 50 for each state based on various factors, including health care access, healthcare quality, and public health. U.S. News calculates an overall ranking for each state by considering these factors. To ensure comparability between states, U.S. News utilizes a z-score distribution to scale each state's ranking relative to all other states.
+The data for the health rankings of each state was obtained from the U.S. News 2021 rankings. This dataset provides a ranking from 1 to 50 for each state based on various factors, including healthcare access, healthcare quality, and public health. U.S. News calculates an overall ranking for each state by considering these factors. To ensure comparability between states, U.S. News utilizes a z-score distribution to scale each state's ranking relative to all other states.
 
 The metric-level results within the dataset range from 0 to 100, where the state with the best performance receives a score of 100, and the state with the worst performance receives a score of 0. All other states are then scaled proportionally between these two extremes. This scaling process allows for a standardized comparison of states' performances across the metrics.
 
-The data collection process involved surveying a random sample of 20 to 26 thousand Americans over three years. The survey included questions specifically related to the weighed categories used in the rankings. Respondents' answers were weighted based on their ranking of healthcare importance in their respective states, ranging from one to eight. The results were also weighted to ensure representation of the country's population across various demographics, including age, gender, ethnicity, and household income.
+The data collection process involved surveying a random sample of 20 to 26 thousand Americans over three years. The survey included questions specifically related to the weighted categories used in the rankings. Respondents' answers were weighted based on their ranking of healthcare importance in their respective states, ranging from one to eight. The results were also weighted to ensure representation of the country's population across various demographics, including age, gender, ethnicity, and household income.
 
 In addition to the survey data, the health rankings incorporate data sourced from local and government data agencies. These agencies provide specific information related to the three metrics that contribute to each state's health ranking. The following is a list of each sub-variable in the central three metrics mentioned above:
 
@@ -140,16 +250,15 @@ kableExtra::scroll_box(kbl2)
 
 ```
 
-
 ### [Proportion of Democratic Voters](https://www.cookpolitical.com/2020-national-popular-vote-tracker)
 
-The data was collected by the Cook Political Report, tracking the electoral vote counts for each state for the 2020 presidential election. It represents the number of votes each party received for each state, whether democratic (Biden Votes – blue), republican (Trump Votes – red), or other (third-party). Additionally, the tracker shows how much share each party has for each state in percentage. The election map vote tracker shows that democratic states are more in both the western and eastern parts of the country, whereas the republican states are more in the middle portion.
+The data was collected by the Cook Political Report, tracking the electoral vote counts for each state for the 2020 presidential election. It represents the number of votes each party received in each state, whether Democratic (Biden Votes – blue), republican (Trump Votes – red), or other (third-party). Additionally, the tracker shows each party's share for each state in percentage.
 
 ### [Rate of Jobs that went Remote](https://www.teamflowhq.com/blog/states-where-the-most-people-worked-remote-because-of-covid-19)
 
-This data was collected by the U.S. Census Bureau’s Household Pulse Survey in 2021. This data was collected from mid-April when vaccines first became available to all adults through early July when cases began to rise again. It includes the ranks of each state, the proportion of remote workers, Percentage of Adults in households with a remote worker, Total adults in households with a remote worker, Percentage of adults in households with expected income loss, Percentage of adults in households with difficulty paying expenses, and the median household income in each state.
+This data was collected by the U.S. Census Bureau’s Household Pulse Survey in 2021. This data was collected from mid-April, at which point vaccines first became available to all adults, through early July, when cases began to rise significantly. It includes the ranks of each state, the proportion of remote workers, the percentage of adults in households with a remote worker, the total number of adults in households with a remote worker, the percentage of adults in households with expected income loss, the percentage of adults in households with difficulty paying expenses, and the median household income in each state.
 
-To determine the states where the most people worked remotely because of COVID-19, researchers used data from this survey to calculate the percentage of adults in households where at least one adult worked from home because of the coronavirus pandemic in the past seven days, averaged over the survey weeks during which this question was asked. Notably, this only includes those who worked remotely because of the pandemic, and not those that would have done so regardless. In the event of a tie, the state with the higher number of adults in these households was ranked higher.
+To determine the states where the highest proportion of people worked remotely because of COVID-19, researchers used data from this survey to calculate the percentage of adults in households where at least one adult worked from home because of the coronavirus pandemic in the past seven days, averaged over the survey weeks during which this question was asked. Notably, this only includes those who worked remotely because of the pandemic and not those who would have done so regardless. In the event of a tie, the state with the higher number of adults in these households was ranked higher.
 
 ## Key Statistical Tests
 
@@ -161,31 +270,7 @@ The null hypothesis ($H_0$) for all the tests posits that there is no correlatio
 
 ### Principal Component Analysis
 
-Using the Principal Component Analysis, we were able to bring our seven interrelated variables down to fewer variables that still accounted for a lot of the variability with the explanatory variable. Using standardization, we were able to put all of the variables on even footing to ensure that no variable had more weight than another. Our goal with this was to create a more reasonable model that gave the data room to be unaffected by collinearity. By using the Principal Component Analysis, we were able to create a model that predicted low-income job loss based on two completely independent variables. In the end, we created a model that accounted for 91.8% of the variability in the explanatory variables. It is important that when trying to predict using this model to plug in standardized versions to ensure that all variables are properly accounted for.
-
-```{r, echo=FALSE}
-t1 <- tibble::tribble(
-                                               ~Variable, ~Component.1, ~Component.2,
-                                 "Health Care Rank 2021",   0.48236001,  0.217175965,
-            "Doses of the COVID-19 Vaccine Administered",   0.54576527,  0.005541377,
-                          "Proportion of Remote Workers",  0.430298218,  0.263151047,
-                            "Total Days of Mask Mandate",  0.197323354, -0.402118639,
-        "Annual Income Difference Between 2018 and 2021", -0.352365032,  0.509460804,
-  "Proportion of Democratic Voters in the 2020 Election",  0.385462209,  0.017017971,
-                                    "Gathering Size Ban",  0.007211243,  -0.67971766
-  )
-
-kbl1 <- kableExtra::kable(t1, "html") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
-  kable_classic() %>%
-  kable_paper() %>%
-  row_spec(0, bold = TRUE) %>%
-  row_spec(0, color = "white", background = "black")
-
-# Add scrollable container around the table
-kableExtra::scroll_box(kbl1)
-
-```
+Using the Principal Component Analysis, we were able to bring our seven interrelated variables down to fewer variables that still accounted for a lot of the variability with the explanatory variable. Using standardization, we were able to put all of the variables on an even footing to ensure that no variable had more weight than another. Our goal with this was to create a more reasonable model that gave the data room to be unaffected by co-linearity. Using the Principal Component Analysis, we created a model that predicted low-income job loss based on two completely independent variables. In the end, we created a model that accounted for 91.8% of the variability in the explanatory variables. It is important when trying to predict using this model to plug in standardized versions to ensure that all variables are properly accounted for.
 
 ## Results
 
@@ -193,18 +278,18 @@ kableExtra::scroll_box(kbl1)
 
 #### Summary of Results 
 
-According to the following table, the eight variables’ p-values fall under the alpha level of 0.05. In terms of relationship strength, majority of the variables have a moderate relationship with the proportion of low-income jobs lost per state, whether positive or negative. Length of masking requirement and the proportion of democratic voters in 2020 both have a strong positive correlation with low-income jobs lost. Rate of jobs that went remote has a positive, but weak relationship with low-income jobs lost.
+According to the following table, the eight variables’ p-values fall under the alpha level of 0.05. In terms of relationship strength, the majority of the variables have a moderate relationship with the proportion of low-income jobs lost per state, whether positive or negative. The length of masking requirement and the proportion of Democratic voters in 2020 both have a strong positive correlation with low-income jobs lost. The rate of jobs that went remote has a positive but weak relationship with low-income jobs lost.
 
 ```{r, echo=FALSE}
 my_tibble <- tibble::tribble(
-                              ~`Variable​​`,      ~`P-Value​​`, ~`Correlation​.Coefficient ​​`,                                          ~`Relationship.With.PLIJs.Lost​​`,
+                              ~`Variable​​`,      ~`P-Value​​`, ~`Correlation Coefficient ​​`,                                          ~`Relationship With PLIJs Lost​​`,
                     "​Rate of Vaccination​",  "​1.497 × 10-5​",                       "​0.57​",             "​Moderate & Positive (Rate of Vaccination ↑, PLIJs Lost ↑) ​",
          "​Length of Vaccine Availability​", "​6.24 x 10-6  ​",                       "​0.60​",  "​Moderate & Positive (Length of Vaccine Availability ↑, PLIJs Lost ↑) ​",
           "Length of Masking Requirement​​",  "1.929 x 10⁻⁷​​",                       "0.7​0​",             "Strong & Positive (Length of Requirements ↑, PLIJs Lost ↑)​​",
       "Gathering Restrictions (Max Length)",     "0.0009606​​",                       "0.45​​", "Moderate & Positive (Length of Gathering Restrictions ↑, PLIJs Lost ↑)​​",
        "​Average Salary (per state, 2021)​",       "0.00113​​",                       "​0.45​",                   "​Moderate & Positive (Average Salary ↑, PLIJs Lost ↑)​",
                  "Healthcare Rank (2021)​​",      "0.001125​​",                      "-0.5​0​",                  "Moderate & Negative (Healthcare rank ↑, PLIJs Lost ↓)​​",
-  "Proportion of Democratic Voters (2020)​",   "1.909 × 10-6​",                         "0.61",         "Strong & Positive (Prop. of Democratic voters ↑, PLIJs Lost ↑) ​",
+  "Proportion of Democratic Voters (2020)​",   "2.97 × 10-8​",                         "0.68",         "Strong & Positive (Prop. of Democratic voters ↑, PLIJs Lost ↑) ​",
           "​Rate of Jobs that went Remote​",      "​ 0.04745​",                       "​0.29​",       "​Weak & Positive (Rate of Jobs that went Remote ↑, PLIJs Lost ↑) ​"
   )
 
@@ -223,18 +308,18 @@ kableExtra::scroll_box(my_table)
 
 When conducting a hypothesis test to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the Rate of Vaccinations by state, the obtained p-value of 1.497 × 10-5 in which we reject the null hypothesis & correlation coefficient is 0.57.
 
-These results signify a moderate positive correlation between the proportion of low-income jobs lost per state (by population) and the length of vaccine availability in the U.S (by each state). Furthermore, the 95% confidence interval of (0.3702306, 0.7418059) does not include 0, which further supports the conclusion that there is a relationship between these variables. This tells us that the more vaccination rates were administered & distributed, the more jobs were loss due to covid vaccination regulations and many companies or businesses started to require these doses which could have led to some complications.
+These results signify a moderate positive correlation between the proportion of low-income jobs lost per state (by population) and the length of vaccine availability in the US (by each state). Furthermore, the 95% confidence interval of (0.3702306, 0.7418059) does not include 0, which further supports the conclusion that there is a relationship between these variables. This tells us that the more vaccination rates were administered & distributed, the more jobs were lost due to COVID-19 vaccination regulations, and many companies or businesses started to require these doses, which could have led to some complications.
 
-This graph below represents the relationship between the rate of vaccinations (Total Doses Administered per state) and the proportion of jobs loss. What does this mean? Certain states either pushed for vaccinations less compared to others or the citizens of the states were not interested in getting vaccinated. Does that mean the less strict a state is, the fewer jobs it lost? You would assume that if a state is stricter, then they would be able to reopen businesses faster, thus losing less workers? Many businesses & states pushed for vaccinations & probably made it mandatory to work so that is why some states have more vaccinations administered.
+The graph below represents the relationship between the rate of vaccinations (Total Doses Administered per state) and the proportion of jobs lost. What does this mean? Certain states either pushed for vaccinations less compared to others, or the citizens of the states were not interested in getting vaccinated. Does that mean the less strict a state is, the fewer jobs it lost? You would assume that if a state is stricter, then they would be able to reopen businesses faster, thus losing fewer workers? Many businesses & states pushed for vaccinations & probably made it mandatory to work so that is why some states have more vaccinations administered.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(openintro)
 library(albersusa)
 library(plotly)
 library(ggplot2)
-covid19_vaccinations_state_prop <- read_csv("covid19_vaccinations_state_prop.csv", skip = 4)
-remote_work_2021 <- read_excel("remote_work_2021.xlsx")
+covid19_vaccinations_state_prop <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/length_of_vaccine_aval/covid19_vaccinations_state_prop.csv", skip = 4)
+remote_work_2021 <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Remote_Work/remote_work_2021.csv")
 my_map_theme <- function(){
   theme(panel.background=element_blank(),
         axis.text=element_blank(),
@@ -282,18 +367,17 @@ ggplot(mapdata1) +
 
 Before doing the hypothesis testing, we had to compute the proportion of people who are vaccinated vs proportion of low income jobs lost in which we divided the percent total population with a completed series to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the Length of Vaccine Availability (by each state, the obtained p-value of 6.24 x 10-6 in which we reject the null hypothesis & correlation coefficient is 0.60.
 
-These results signify a moderate positive correlation between the proportion of low-income jobs lost per state (by population) and the length of vaccine availability in the U.S (by each state). Furthermore, the 95% confidence interval of (0.3702306, 0.7418059) does not include 0, which further supports the conclusion that there is a relationship between these variables.  
+These results signify a moderate positive correlation between the proportion of low-income jobs lost per state (by population) and the length of vaccine availability in the US (by each state). Furthermore, the 95% confidence interval of (0.3702306, 0.7418059) does not include 0, which further supports the conclusion that there is a relationship between these variables.  
 
-In this graph, we wanted to highlight duration of vaccine availability. If the availability and distribution of vaccines are delayed or prolonged, it can extend the duration of the COVID-19 pandemic. This, in turn, can have severe economic consequences, including business closures, reduced consumer spending, and job losses across various sectors. Low-income workers are often employed in industries that have been disproportionately affected by the pandemic, such as hospitality, retail, and personal services, making them particularly vulnerable to job losses. Also, this issue can result in shifts and changes within industries. Some businesses may struggle to sustain their operations for an extended period, leading to closures or downsizing. This can lead to job losses, particularly for low-income workers employed in sectors that are heavily impacted and unable to adapt to changing market conditions.
+In this graph, we wanted to highlight the duration of vaccine availability. If the availability and distribution of vaccines are delayed or prolonged, it can extend the duration of the COVID-19 pandemic. This, in turn, can have severe economic consequences, including business closures, reduced consumer spending, and job losses across various sectors. Low-income workers are often employed in industries that have been disproportionately affected by the pandemic, such as hospitality, retail, and personal services, making them particularly vulnerable to job losses. Also, this issue can result in shifts and changes within industries. Some businesses may struggle to sustain their operations for an extended period, leading to closures or downsizing. This can lead to job losses, particularly for low-income workers employed in sectors that are heavily impacted and unable to adapt to changing market conditions.
 
-```{r, echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(openintro)
 library(albersusa)
 library(plotly)
 library(ggplot2)
-covid19_vaccinations_state_prop <- read_csv("covid19_vaccinations_state_prop.csv", skip = 4)
-remote_work_2021 <- read_excel("remote_work_2021.xlsx")
+covid19_vaccinations_state_prop <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/rate_of_vaccination/covid19_vaccinations_state_prop.csv", skip = 4)
 my_map_theme <- function(){
   theme(panel.background=element_blank(),
         axis.text=element_blank(),
@@ -301,44 +385,106 @@ my_map_theme <- function(){
         axis.title=element_blank())
 }
 
-# first, filter data
 covid19_vaccinations_state_prop_new <- covid19_vaccinations_state_prop %>%
   rename("State_Territory" = `Jurisdiction (State/Territory) or Federal Entity`, 
          "Total_doses_distrubuted" = `Total doses distributed`,
          "Doses_distributed_per_100K_pop" = `Doses distributed per 100K pop`,
          "Doses_admin_by_jurisdiction_per_100K_pop" = `Doses administered by jurisdiction per 100K pop`,
-         "Percent_total_pop_with_completed_primary_series" = `Percent of total pop with a completed primary series`) %>%
+         "Percent_total_pop_with_completed_primary_series" = `Percent of total pop with a completed primary series`,
+         "Percent_total_pop_with_at_least_one_dose" = `Percent of total pop with at least one dose`) %>% 
   mutate(State_Territory = str_replace(State_Territory, "New York State", "New York")) %>% 
   mutate(Doses_admin_by_jurisdiction_per_100K_pop = as.integer(Doses_admin_by_jurisdiction_per_100K_pop)) %>% 
-  mutate(Percent_total_pop_with_completed_primary_series = as.integer(Percent_total_pop_with_completed_primary_series))
+  mutate(Percent_total_pop_with_completed_primary_series = as.integer(Percent_total_pop_with_completed_primary_series)) %>% 
+  mutate(Percent_total_pop_with_at_least_one_dose = as.integer(Percent_total_pop_with_at_least_one_dose))
+politcal <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/political_votes_2020/Popular%20vote%20backend%20-%20Sheet1.csv")
 
 # join with geographic data for map
 us_states <- usa_sf("laea")
 
-#Changed around the cutpoints to try to encapsulate the data better, feel free to use whichever you want.
+#Cut points need to be the edges of your data, so the labels match the amount of space
 #create cutpoints & labels
-my_cutpoints <- c(40, 50, 65, 70, 90, 100)
-my_labels <- c("40 - 50%", "50 - 65%", "65 - 70%", "70 - 90%", "90% +")
+my_cutpoints <- c(0, 100000, 150000, 200000, 250000, 400000)
+my_labels <- c("0 - 100,000 +", "100,001 - 150,000", "150,001 - 200,000", "200,001 - 250,000", "250,000 +")
 
 #join us_states data with covid-19 vaccination data
 mapdata1 <- left_join(us_states, covid19_vaccinations_state_prop_new, by = c("name" = "State_Territory")) %>% 
-  mutate(mar = cut(Percent_total_pop_with_completed_primary_series, breaks = my_cutpoints, labels = my_labels))
+  mutate(mar = cut(Doses_admin_by_jurisdiction_per_100K_pop, breaks = my_cutpoints, labels = my_labels))
+
+library(dplyr)
+
+politcal$prop_dem <- as.numeric(gsub("%", "", politcal$dem_percent))/100
+
+politcal$prop_rep <- as.numeric(gsub("%", "", politcal$rep_percent))/100
+
+politcal$party <- politcal$called
+
+#mapdata1$party <- politcal$party
+
+library(ggplot2)
+remotes::install_github("coolbutuseless/ggpattern")
+
+my_colors <- c("#A22015","#DC4631","#6783B8","#0E2549","navy")
+
+library(ggplot2)
+library(ggpattern)
+library(maps)
+devtools::install_github("wmurphyrd/fiftystater")
+library(fiftystater)
+
+states <- rbind(map_data("state"))
+
+states <- fifty_states
+
+info <- covid19_vaccinations_state_prop_new
+
+info$State_Territory <- tolower(info$State_Territory)
+info$region <- info$state_territory
+choro <- merge(states, info, sort = FALSE, by.x = "id", by.y = "State_Territory",all.x = TRUE)
+
+choro <- choro[order(choro$order), ]
+
+choro$mar <- cut(choro$Percent_total_pop_with_at_least_one_dose, breaks = my_cutpoints, labels = my_labels)
+
+politcal$region <- tolower(politcal$state)
+
+choro$party <- vector("character", nrow(choro))
+
+for (i in 1:nrow(choro)) {
+  region <- choro[i, "id"]
+  p <- politcal$party[politcal$region == region]
+  choro[i, "party"] <- p
+}
+
+my_cutpoints1 <- c(40, 50, 60, 70, 80, 100)
+my_labels1 <- c("40 - 50%", "50 - 60%", "60 - 70%", "70 - 80%", "80% +")
+
+choro$mar1 <- cut(choro$Percent_total_pop_with_completed_primary_series, breaks = my_cutpoints1, labels = my_labels1)
 
 #add colors
-my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
-                        "white","#c7e9b4")
-#initial map
-ggplot(mapdata1) +
-  geom_sf(aes(fill= mar), color = "black") +
+#my_colors1 <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84","white","#c7e9b4")
+
+my_colors1 <- my_colors
+
+ggplot(choro, aes(long, lat, pattern = party)) +
+  geom_polygon_pattern(aes(group = group, fill = mar1), color = "black", pattern_fill = "white") +
+  coord_map("albers", lat0 = 45.5, lat1 = 29.5) +
   my_map_theme() +
-  scale_fill_manual("", values = my_colors) +
-  labs(title="Percent Total Population with Completed Series reported to\nthe CDC by State/Territory and for Select Federal Entities") +
-  theme(legend.position = "top", legend.direction = "horizontal")
+  scale_fill_manual("", values = my_colors1) +
+  scale_pattern_manual(
+    values = c(R = "stripe", D = "none"),
+    labels = c(R = "Republican", D = "Democratic"),
+    guide = guide_legend(title = "Political Party")
+  ) +
+  labs(
+    title = "Percent Total Population with Completed Series reported to\nthe CDC by State/Territory and for Select Federal Entities"
+  ) +
+  theme(legend.position = "top", legend.direction = "horizontal") +
+  guides(fill = guide_legend(override.aes = list(pattern = "none")))
 ```
 
 #### [Length of Masking Requirement](https://ballotpedia.org/State-level_mask_requirements_in_response_to_the_coronavirus_\(COVID-19\)_pandemic,_2020-2022)
 
-When conducting a hypothesis test to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the duration of masking requirements, the obtained p-value and correlation coefficient were 1.929*10^(-7) and 0.70 respectively. These results signify a strong, positive correlation between the estimated proportion of low-income jobs lost per state and the length of masking requirements. Therefore, states with lengthier masking requirements are expected to experience a higher proportion of job losses.
+When conducting a hypothesis test to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the duration of masking requirements, the obtained p-value and correlation coefficient were 1.929*10^(-7) and 0.70, respectively. These results signify a strong, positive correlation between the estimated proportion of low-income jobs lost per state and the length of masking requirements. Therefore, states with lengthier masking requirements are expected to experience a higher proportion of job losses.
 
 The following graphic illustrates the connection between the duration of masking requirements, the proportion of job losses, and the political leaning of states in the 2020 primary elections. States with lengthier masking requirements tend to occupy the upper section of the plot, where a higher proportion of low-income jobs were lost. This section is predominantly populated by Democratic-majority states. In contrast, Republican-majority states generally exhibit shorter or no masking requirements, and they report smaller proportions of low-income jobs lost to the pandemic.
 
@@ -486,12 +632,12 @@ According to the hypothesis test on the relationship between average salary and 
 
 Based on the following visualization, the map shows the average annual wage per state in 2021 color-coded. The higher the average annual wage, the brighter the state, and the lower the average annual wage, the darker the state. Washington, California, New York, and Massachusetts have the highest average annual wage in 2021, whereas some mid-Eastern and Western states have the lowest average.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(openintro)
 library(albersusa)
-library(readxl)
-annual_wage = read_excel('average wage by state in 2019.xlsx')
+library(readr)
+annual_wage = read_csv('https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/avg_salary_per_state/salary_2019.csv')
 us_states <- usa_sf("laea")
 
 my_map_theme <- function(){
@@ -506,13 +652,25 @@ annualsalary_map <- left_join(us_states, annual_wage, by=c('name' = 'State'))
 annualsalary_map <- annualsalary_map %>%
   select(name, iso_3166_2, Avg_Annual_Wage, geometry)
 
+annualsalary_map <- annualsalary_map[-6,]
+breaks <- c(40000, 50000, 60000, 70000, 80000, max(annualsalary_map$Avg_Annual_Wage))
+labels <- c("40k-50k", "50k-60k", "60k-70k", "70k-80k", "80k+")
+
+# Cut the Avg_Annual_Wage variable into discrete categories
+annualsalary_map$Wage_Category <- cut(annualsalary_map$Avg_Annual_Wage, breaks = breaks, labels = labels, include.lowest = TRUE)
+
+# Define your custom colors
+my_colors <- c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84", "white", "#c7e9b4")
+
+# Plot with custom colors
 ggplot(annualsalary_map) +
-  geom_sf(aes(fill = Avg_Annual_Wage)) +
-  scale_fill_continuous(low = "red", high = "green") + 
+  geom_sf(aes(fill = Wage_Category)) +
+  scale_fill_manual(values = my_colors) +
   my_map_theme() +
   labs(title = "Average Annual Wage Across States in 2021") +
-  theme(plot.title = element_text(hjust = -2.5, size = 20)) +
+  theme(legend.position = "top", legend.direction = "horizontal")+
   guides(fill = guide_legend(title = "Average Annual Wage"))
+
 ```
 
 #### [Healthcare Rank](https://www.usnews.com/news/best-states/articles/methodology)
@@ -521,23 +679,23 @@ Hypothesis testing between the health rank of each state and low-income jobs los
 
 #### [Proportion of Democratic Voters](https://www.cookpolitical.com/2020-national-popular-vote-tracker)
 
-According to the hypothesis test on the relationship between the proportion of Democratic voters and low-income jobs lost, a p-value of 1.909 x 10-6 (0.000001909) and a correlation coefficient of 0.61 are provided. We conclude that there is a strong, positive correlation between the proportion of low-income jobs lost per state (by population) and the proportion of democratic voters. This means that an increase in the proportion of democratic voters is associated with a higher proportion of low-income jobs lost. 
+According to the hypothesis test on the relationship between the proportion of Democratic voters and low-income jobs lost, a p-value of 1.909 x 10-6 (0.000001909) and a correlation coefficient of 0.61 is provided. We conclude that there is a strong, positive correlation between the proportion of low-income jobs lost per state (by population) and the proportion of Democratic voters. This means that an increase in the proportion of Democratic voters is associated with a higher proportion of low-income jobs lost. 
 
 #### [Rate of Jobs that went Remote](https://www.teamflowhq.com/blog/states-where-the-most-people-worked-remote-because-of-covid-19)
 
 When conducting a hypothesis test to examine the relationship between the estimated proportion of low-income jobs lost due to COVID-19 and the Rate of Jobs that went Remote, the obtained p-value of 0.04745 in which we reject the null hypothesis & correlation coefficient is 0.29.
 
-These results signify a weak but positive correlation between the proportion of low-income jobs lost per state (by population) and the Proportion of jobs that went remote due to covid-19 in the U.S (by each state). Furthermore, the 95% confidence interval of (0.003690818, 0.519365939) does not include 0, which further supports the conclusion that there is a relationship between these variables. This tells us that many people had to transition into remote jobs due to covid and could have caused an increase in job loss due to strict covid regulations made by many companies or businesses.
+These results signify a weak but positive correlation between the proportion of low-income jobs lost per state (by population) and the Proportion of jobs that went remote due to COVID-19 in the US (by each state). Furthermore, the 95% confidence interval of (0.003690818, 0.519365939) does not include 0, which further supports the conclusion that there is a relationship between these variables. This tells us that many people had to transition into remote jobs due to COVID-19, which could have caused an increase in job loss due to strict COVID-19 regulations made by many companies or businesses.
 
-This graph shows the relationship between these two variables. We wanted to highlight how big of an impact the covid-19 pandemic affected the work industry in the U.S, how many people had to transition into doing remote work, and how it also had an impact of people losing their jobs as well. Remote work allows companies to hire employees from anywhere, leading to increased competition for certain jobs. Low-income workers who were previously employed in industries that are now remote-capable may face difficulties in securing remote positions. Another thing is that the shift to remote work can trigger broader structural changes in industries. For instance, reduced demand for office space, business travel, or in-person services can lead to downsizing or closures of businesses that predominantly employ low-income workers. The transition to remote work may not be feasible for industries that heavily rely on face-to-face interactions or physical presence.
+This graph shows the relationship between these two variables. We wanted to highlight how big of an impact the COVID-19 pandemic had on the work industry in the US, how many people had to transition into doing remote work, and how it also had an impact on people losing their jobs as well. Remote work allows companies to hire employees from anywhere, leading to increased competition for certain jobs. Low-income workers who were previously employed in industries that are now remote-capable may face difficulties in securing remote positions. Another thing is that the shift to remote work can trigger broader structural changes in industries. For instance, reduced demand for office space, business travel, or in-person services can lead to downsizing or closures of businesses that predominantly employ low-income workers. The transition to remote work may not be feasible for industries that heavily rely on face-to-face interactions or physical presence.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(openintro)
 library(albersusa)
 library(plotly)
 library(ggplot2)
-covid19_vaccinations_state_prop <- read_csv("covid19_vaccinations_state_prop.csv", skip = 4)
+covid19_vaccinations_state_prop <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/length_of_vaccine_aval/covid19_vaccinations_state_prop.csv", skip = 4)
 remote_work_2021 <- read_csv("https://raw.githubusercontent.com/Yarrabozaed/Data-and-Society/main/Hypothesis_Testing/Remote_Work/remote_work_2021.csv")
 my_map_theme <- function(){
   theme(panel.background=element_blank(),
@@ -565,8 +723,8 @@ mapdata1 <- left_join(us_states, remote_work_2021_new, by = c("name" = "State"))
 mapdata2 <- mapdata1[-6,]
 
 #add colors
-my_colors <- c("#d0d1e6","#a6bddb","#67a9cf","#1c9099","#016c59",
-                        "white","#f6eff7")
+my_colors <- c("#7fcdbb","#41b6c4","#1d91c0","#225ea8","#0c2c84",
+                        "white","#c7e9b4")
 #initial map
 ggplot(mapdata2) +
   geom_sf(aes(fill= mar), color = "black") +
@@ -576,61 +734,81 @@ ggplot(mapdata2) +
   theme(legend.position = "top", legend.direction = "horizontal")
 ```
 
-#### PCA
+### PCA
 
-By standardizing each variable then plugging them into each component, we can then use 	the equation below to predict the proportion of low-income jobs that should have been 	lost to the COVID-19 pandemic. 
+By standardizing each variable and then plugging them into each component, we can then use the equation below to predict the proportion of low-income jobs that should have been lost to the COVID-19 pandemic. 
 
-LowIncomeJobsLost $= 0.049508 + 0.009850 × Component1 + 0.007802 × Component2 + ε$ We can use this model to say that states that had higher proportion of democratic voters 	and more COVID-19 restrictions had more low-income jobs lost due to COVID-19.
+LowIncomeJobsLost $= 0.049508 + 0.009850 × Component1 + 0.007802 × Component2 + ε$ We can use this model to say that states that had higher proportion of democratic voters and more COVID-19 restrictions had more low-income jobs lost due to COVID-19.
 
 ## Discussion
 
-According to our findings, we were able to find that democratic states with numerous COVID-19 restrictions caused higher numbers of predicted low-income jobs lost due to COVID-19. As seen from our model explaining each component of the principal component analysis, we can find a state with a better healthcare ranking, higher doses of the COVID-19 vaccine administered, a higher proportion of workers moving to remote workers, and a higher proportion of democratic voters causes our first component to be higher. This is as opposed to having higher income by state bring down our value for component one. This makes sense because based on our findings, states with a higher proportion of Democratic voters tended to have higher healthcare rankings. We also found having a higher proportion of Democratic voters caused more COVID-19 restrictions. When considering that, it makes sense that those values are all positive in component one. When looking at the annual income for 2021, we find that it is not highly correlated with any variable. Because of this, we came to believe that annual income from 2021 was used as a gap between component one and component two.
+According to our findings, we were able to find that democratic states with numerous COVID-19 restrictions caused higher numbers of predicted low-income jobs lost due to COVID-19. As seen from our model explaining each component of the principal component analysis, we can find a state with a better healthcare ranking, higher doses of the COVID-19 vaccine administered, a higher proportion of workers moving to remote workers, and a higher proportion of democratic voters causes our first component to be higher. This is as opposed to having higher income by state bring down our value for component one. This makes sense because, based on our findings, states with a higher proportion of Democratic voters tended to have higher healthcare rankings. We also found having a higher proportion of Democratic voters caused more COVID-19 restrictions. When considering that, it makes sense that those values are all positive in component one. When looking at the annual income for 2021, we find that it is not highly correlated with any variable. Because of this, we came to believe that annual income from 2021 was used as a gap between component one and component two.
 
-We now see that only a higher average annual income in 2021 will heavily increase component two. We then also see that the total days of mask mandates and banned gathering sizes have a higher pull in the negative direction and help to compensate for over predictions in the first component. This makes a lot of sense that the second component would be comprised mostly to pull the proportions into reasonable ranges. Noting that the highest proportion of low-income jobs lost to COVID-19 was about 17.6% in our model, it makes sense that our variables would be low, and we would want our model to predict low numbers.
+We now see that only a higher average annual income in 2021 will heavily increase component two. We then also see that the total days of mask mandates and banned gathering sizes have a higher pull in the negative direction and help to compensate for over-predictions in the first component. It makes a lot of sense that the second component would be comprised mostly of pulling the proportions into reasonable ranges.  Noting that the highest proportion of low-income jobs lost to COVID-19 was about 17.6% in our model, it makes sense that our variables would be low, and we would want our model to predict low numbers.
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+my_tibble_PCA <- tibble::tribble(
+                                               ~Variable, ~`Component 1`, ~`Component 2`,
+                                 "Health Care Rank 2021",    0.5062862,   0.15467635,
+            "Doses of the COVID-19 Vaccine Administered",   0.54527833,  -0.06696825,
+                          "Proportion of Remote Workers",   0.45113703,   0.21801794,
+                            "Total Days of Mask Mandate",   0.04482315,  -0.40083484,
+                                    "Annual Income 2021",   -0.2988173,   0.55074145,
+  "Proportion of Democratic Voters in the 2020 Election",   0.38128874,  -0.02809592,
+                                    "Gathering Size Ban",  -0.07835304,  -0.67770537
+  )
 
+my_table_PCA <- kableExtra::kable(my_tibble_PCA, "html") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+  kable_classic() %>%
+  kable_paper() %>%
+  row_spec(0, bold = TRUE) %>%
+  row_spec(0, color = "white", background = "black")
+
+# Add scrollable container around the table
+kableExtra::scroll_box(my_table_PCA)
+
+```
 
 Finally, we can see that by un-standardizing the variables and plugging each variable through the component, we can find ways to predict the proportion of low-income jobs lost due to COVID-19 based on each individual variable. We can see from the following equation what each variable would bring to each predictor and what the new intercept is.
 
 
-Intercept							= -0.00446929  
-Health Care Ranking Coefficient				= 0.00000275842  
-Doses of Vaccine Administered Coefficient			= 0.00007061625 
-Proportion of Remote Workers Coefficient			= 0.005828656 
-Total Days of Mask Mandate Coefficient			= 0.00000001499702 
-Annual Income Coefficient					= -0.000001608766 
-Proportion of Democratic Workers Coefficient		= -0.00002440761 
-Gathering Size Ban						= -0.000002022761 
+Intercept &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.00446929$
 
-While this model is less interpretable, this is great for using for predictions. Using these coefficients, we can get accurate predictions based on each variable’s value. This is as opposed to the following model that gives a great idea of how each variable affects the model but is not as good at predicting.
+Health Care Ranking Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00000275842$
 
-Standardized Intercept						= 0.049508 
-Standardized Health Care Ranking Coefficient			= 0.00646018546107 
-Standardized Doses of Vaccine Administered Coefficient		= 0.00540624078874 
-Standardized Proportion of Remote Workers Coefficient		= 0.006312696880526 
-Standardized Total Days of Mask Mandate Coefficient		= -0.001245683021122 
-Standardized Annual Income Coefficient				= 0.000572238398216 
-Standardized Proportion of Democratic Workers Coefficient	= 0.003922719458163 
-Standardized Gathering Size Ban					= -0.005312498982239 
+Doses of Vaccine Administered Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00007061625$ 
+
+Proportion of Remote Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.005828656$
+
+Total Days of Mask Mandate Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00000001499702$
+
+Annual Income Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.000001608766$
+
+Proportion of Democratic Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.00002440761$
+
+Gathering Size Ban &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.000002022761$
+
+While this model is less interpretable, it is great for using for predictions. Using these coefficients, we can get accurate predictions based on each variable’s value. This is as opposed to the following model, which gives a great idea of how each variable affects the model but is not as good at predicting.
+
+Standardized Intercept &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.049508$ 
+
+Standardized Health Care Ranking Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00646018546107$
+
+Standardized Doses of Vaccine Administered Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.00540624078874$
+
+Standardized Proportion of Remote Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.006312696880526$ 
+
+Standardized Total Days of Mask Mandate Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.001245683021122$ 
+
+Standardized Annual Income Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.000572238398216$ 
+
+Standardized Proportion of Democratic Workers Coefficient &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= 0.003922719458163$ 
+
+Standardized Gathering Size Ban &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  $= -0.005312498982239$ 
 
 While both models are useful, it is good to see how each variable affects the model and allows us to see that the standardized annual income coefficient has the least impact on the model when standardized and helps to see that the balance between component one and component two minimizes annual income while allowing for corrective elements to come in like gathering size ban and total days of mask mandate.
 
-<!--
-## Including Code
+## GitHub Repository
 
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
--->
+Click [here](https://github.com/Yarrabozaed/Data-and-Society) to view our GitHub repository and code!
