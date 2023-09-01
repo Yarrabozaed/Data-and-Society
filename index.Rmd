@@ -32,7 +32,7 @@ This report was written by Yarra Abozaed, Janelle Acob, Zach Johansen, and Tim C
 
 ## Abstract
 
-The COVID-19 pandemic has disproportionately impacted low-income individuals, resulting in significant job losses around the world. This paper examines the relationship between the responses to the pandemic in the United States and the impact of such responses on the low-income job market. We examine a set of relevant variables that are correlated to the loss of low-income jobs and use said variables to create a predictive model using principal component analysis.
+The COVID-19 pandemic has disproportionately impacted low-income workers, resulting in significant job losses around the world. This paper examines the relationship between the responses to the pandemic in the United States and the impact of such responses on the low-income job market. We examine a set of relevant variables that are correlated to the loss of low-income jobs and use said variables to create a predictive model using principal component analysis.
 
 ## Introduction
 
